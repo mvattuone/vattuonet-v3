@@ -1,0 +1,14 @@
+// constants
+export const MAP_WIDTH = 4096;
+export const MAP_HEIGHT = 4096;
+export const SPRITE_SIZE = 72;
+export const FRAME_COUNT = 2;
+export const DIRECTION_COUNT = 9;
+export const MIN_ALTITUDE = 0;
+export const MAX_ALTITUDE = 100;
+export const MIN_WORLD_TILT = 67;
+export const MAX_WORLD_TILT = 67;
+export const MIN_PERSPECTIVE = 500;
+export const MAX_PERSPECTIVE = 540;
+export const MIN_PERSPECTIVE_ORIGIN = 30;
+export const MAX_PERSPECTIVE_ORIGIN = 30;

@@ -1,0 +1,509 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./fonts/Inter-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./fonts/Inter-Variable-Italic.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@property --universePerspective {
+  syntax: "<length>";
+  initial-value: 600px;
+  inherits: true;
+}
+@property --waterX {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: false;
+}
+@property --waterY {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: false;
+}
+
+:root {
+  --refW: 1512;
+  --refH: 857;
+
+  --vw: 100vw;
+  --vh: 100vh;
+
+  --sx: calc(var(--vw) / var(--refW));
+  --sy: calc(var(--vh) / var(--refH));
+
+  --s-contain: min(var(--sx), var(--sy));
+  --s-cover: max(var(--sx), var(--sy));
+
+  --s: var(--s-cover);
+  --contentW: calc(var(--refW) * var(--s));
+  --contentH: calc(var(--refH) * var(--s));
+  --offsetX: calc((var(--vw) - var(--contentW)) / 2);
+  --offsetY: calc((var(--vh) - var(--contentH)) / 2);
+  --zRef: 1vmin;
+
+  --universeHeight: var(--vh);
+  --universeRotationShiftX: calc(
+    -0.5 * var(--universeHeight) * sin(var(--universeRotateZ))
+  );
+  --universeRotationShiftY: calc(
+    0.5 * var(--universeHeight) * (1 - cos(var(--universeRotateZ)))
+  );
+  /* Net on-screen shift from universe translate + rotation */
+  --_uDx: var(--universeRotationShiftX);
+  --_uDy: calc(var(--universeTranslateY) + var(--universeRotationShiftY));
+  --universeShiftXScreen: calc(
+    var(--_uDx) * cos(var(--universeRotateZ)) - var(--_uDy) *
+      sin(var(--universeRotateZ))
+  );
+  --universeShiftYScreen: calc(
+    var(--_uDx) * sin(var(--universeRotateZ)) + var(--_uDy) *
+      cos(var(--universeRotateZ))
+  );
+  --fovY: 57deg;
+  --universePerspective: calc((var(--refH) * 1px / 2) / tan(var(--fovY) / 2));
+  --skyPositionX: 0px;
+  --skyTranslateY: -100px;
+  --skyHeightFactor: 0.4959159859976663; /* 425/857 worked */
+  --skyHeight: calc(var(--refH) * 1px * var(--skyHeightFactor));
+  --skyWidthOverflow: 100px;
+  --universeTranslateY: 0px;
+  --universeRotateZ: 0deg;
+  --skyTranslateX: 0px;
+  --universeWidth: 100%;
+  --airshipTranslateX: -50%;
+  --airshipTranslateY: -50%;
+  --worldOriginX: 50%;
+  --worldOriginY: 50%;
+  --worldRotateZ: 90deg;
+  --worldTilt: 67deg;
+  --airshipTranslateZ: 350px;
+
+  --minWorldOriginZ: 310px;
+  --maxWorldOriginZ: 340px;
+
+  --minWorldTranslateZ: 610px;
+  --maxWorldTranslateZ: 690px;
+  --minAltitude: 0px;
+  --maxAltitude: 100px;
+  --minAltitudeRaw: 0;
+  --maxAltitudeRaw: 1;
+  --airshipAltitude: 60px;
+  --airshipAltitudeRaw: 0.6;
+  --waterTileSize: 128px;
+  --waterX: 0px;
+  --waterY: 0px;
+  --skyHeightDelta: 0px;
+  --skyTileWidth: 32px;
+
+  --glareColorSunsetA: rgba(255, 180, 80, 0.55) 0%;
+  --glareColorSunsetB: rgba(255, 180, 80, 0.25) 12%;
+
+  --glareColorDaylightA: rgba(160, 220, 255, 0.55) 0%;
+  --glareColorDaylightB: rgba(160, 220, 255, 0.25) 12%;
+
+  --cloudImageWidth: 1536px;
+  --cloudImageHeight: 850px;
+
+  --shadowScale: 1;
+
+  --worldOriginXCorrected: calc(
+    var(--worldOriginX) - var(--universeShiftXScreen)
+  );
+  --worldOriginYCorrected: calc(
+    var(--worldOriginY) - var(--universeShiftYScreen) +
+      var(--universeTranslateY)
+  );
+  --worldTranslateZPerAltitude: calc(
+    (var(--maxWorldTranslateZ) - var(--minWorldTranslateZ)) /
+      (var(--maxAltitudeRaw) - var(--minAltitudeRaw))
+  );
+  --worldOriginZPerAltitude: calc(
+    (var(--maxWorldOriginZ) - var(--minWorldOriginZ)) /
+      (var(--maxAltitudeRaw) - var(--minAltitudeRaw))
+  );
+  --clampedWorldTranslateZ: clamp(
+    var(--minWorldTranslateZ),
+    calc(
+      var(--maxWorldTranslateZ) -
+        (var(--airshipAltitudeRaw) * var(--worldTranslateZPerAltitude))
+    ),
+    var(--maxWorldTranslateZ)
+  );
+  --clampedWorldOriginZ: clamp(
+    var(--minWorldOriginZ),
+    calc(
+      var(--maxWorldOriginZ) -
+        (var(--airshipAltitudeRaw) * var(--worldOriginZPerAltitude))
+    ),
+    var(--maxWorldOriginZ)
+  );
+}
+
+@keyframes waterDrift {
+  from {
+    --waterX: 0px;
+    --waterY: 0px;
+  }
+  to {
+    --waterX: calc(-1 * var(--waterTileSize));
+    --waterY: 0px;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: var(--vw);
+  height: var(--vh);
+  font-family: "Inter", sans-serif;
+}
+
+.universe {
+  background-color: #222;
+
+  --perspective-origin: 50% 50%;
+
+  width: var(--vw);
+  height: calc(var(--refH) * 1px);
+  position: absolute;
+
+  perspective: var(--universePerspective);
+  perspective-origin: var(--perspective-origin);
+
+  transform: translateX(var(--universeRotationShiftX))
+    translateY(calc(var(--universeTranslateY) + var(--universeRotationShiftY)))
+    rotateZ(var(--universeRotateZ));
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+
+  &:has(.sky.slide-up-enter) {
+    --universeTranslateY: -100px;
+  }
+
+  &:has(.sky.slide-down-enter) {
+    --universeTranslateY: 100px;
+  }
+
+  &:has(.sky.rotate-left-enter) {
+    --universeRotateZ: -7deg;
+    --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+  }
+
+  &:has(.sky.rotate-right-enter) {
+    --universeRotateZ: 7deg;
+    --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+  }
+
+  &:has(.sky.rotate-right-enter.slide-down-enter) {
+    --universeTranslateY: 0px;
+    --skyHeight: 450px;
+    --skyHeightDelta: 25px;
+  }
+
+  &:has(.sky.rotate-left-enter.slide-down-enter) {
+    --universeTranslateY: 0px;
+    --skyHeight: 450px;
+    --skyHeightDelta: 25px;
+    --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+  }
+}
+
+.universe:has(.sky.rotate-left-enter) .world,
+.universe:has(.sky.rotate-right-enter) .world {
+  animation-play-state: paused;
+}
+
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--vw) + var(--skyWidthOverflow));
+  height: var(--skyHeight);
+  background: url("clouds.png"), url("sky2.png");
+  background-size:
+    calc(var(--cloudImageWidth) / 2) calc(var(--cloudImageHeight) / 2),
+    calc(var(--skyTileWidth) * 2) var(--skyHeight);
+  background-position:
+    calc(
+        var(--skyPositionX) - var(--skyHeightDelta) *
+          sin(var(--universeRotateZ))
+      )
+      calc(0px + var(--skyHeightDelta) * cos(var(--universeRotateZ))),
+    calc(var(--skyPositionX)) 0;
+  z-index: 1;
+  transform: translateX(var(--skyTranslateX)) translateY(var(--skyTranslateY));
+  transition:
+    transform 0.3s ease,
+    height 0.3s ease,
+    background-size 0.3s ease,
+    width 0.3s ease,
+    background-position-y 0.3s ease;
+}
+
+.haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.12) 35%,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mix-blend-mode: screen; /* optional, try normal if too strong */
+}
+
+.glare {
+  position: fixed;
+  left: 0;
+  top: var(--skyHeight);
+  width: calc(var(--vw) + var(--skyWidthOverflow));
+  height: 430px;
+  pointer-events: none;
+  z-index: 2;
+
+  transition:
+    top 0.3s ease,
+    height 0.3s ease,
+    width 0.3s ease;
+
+  background: linear-gradient(
+    to bottom,
+    var(--glareColorDaylightA) 0%,
+    var(--glareColorDaylightB) 12%,
+    rgba(255, 180, 80, 0) 32%
+  );
+  mix-blend-mode: screen;
+}
+
+.world {
+  /* Counter the universe's on-screen shift at the world's pivot */
+
+  animation: waterDrift 15s linear infinite;
+  width: var(--vw);
+  height: calc(var(--refW) * 1px); /* square plane, same as you had */
+  transform-style: preserve-3d;
+  transform: rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ))
+    translateZ(var(--clampedWorldTranslateZ));
+  transform-origin: var(--worldOriginXCorrected) var(--worldOriginYCorrected)
+    var(--clampedWorldOriginZ);
+  background-image: url("./world.png"), url("./water.png");
+  background-repeat: repeat, repeat;
+  background-size:
+    4096px 4096px,
+    var(--waterTileSize) var(--waterTileSize);
+  background-position:
+    var(--bgX, 0px) var(--bgY, 0px),
+    calc(var(--bgX) + var(--waterX, 0px)) calc(var(--bgY) + var(--waterY, 0px));
+  image-rendering: pixelated;
+  position: relative;
+  transition: transform-origin 0.3s ease;
+}
+
+.airship {
+  image-rendering: pixelated;
+  background-image: url("./airship.png");
+  background-repeat: no-repeat;
+  width: 72px;
+  height: 72px;
+  position: absolute;
+  bottom: calc(
+    clamp(
+        calc(var(--minAltitude) * sin(var(--worldTilt))),
+        var(--airshipAltitude),
+        var(--maxAltitude)
+      ) +
+      var(--airshipTranslateZ) * sin(var(--worldTilt))
+  );
+  left: 50%;
+  transform: translate3d(
+    var(--airshipTranslateX),
+    var(--airshipTranslateY),
+    var(--airshipTranslateZ)
+  );
+  z-index: 999;
+}
+
+.shadow {
+  --shadowWidth: 100px;
+  --shadowHeight: 200px;
+
+  width: var(--shadowWidth);
+  height: var(--shadowHeight);
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: rotateZ(calc(-1 * var(--universeRotateZ))) rotateX(125deg)
+    translateX(
+      calc(
+        var(--clampedWorldTranslateZ) * sin(var(--universeRotateZ)) -
+          (var(--shadowWidth) / 2)
+      )
+    )
+    translateZ(1px) scale(var(--shadowScale));
+  transition: transform 0.3s ease;
+}
+
+/* For debugging purposes */
+.origin-marker {
+  display: none;
+  --markerSize: 5px;
+
+  position: absolute;
+  width: var(--markerSize);
+  height: var(--markerSize);
+  background: red;
+  border-radius: 50%;
+  /* Place marker at corrected world pivot (after countering universe shift) */
+  left: calc(var(--worldOriginXCorrected) - var(--markerSize) / 2);
+  top: calc(var(--worldOriginYCorrected) - var(--markerSize) / 2);
+  transform: translateZ(1px);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  height: var(--vh);
+  width: var(--vw);
+  position: absolute;
+}
+
+section {
+  background: black;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  text-align: center;
+  gap: 24px;
+  width: var(--vw);
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+h3,
+p,
+a {
+  color: white;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+
+a {
+  text-transform: uppercase;
+}
+
+h3 {
+  text-transform: uppercase;
+}
+
+aside {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.footer-button {
+  appearance: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 18px; /* size of ⏸ */
+  line-height: 1;
+  margin: 0;
+  cursor: pointer;
+  place-items: center;
+}
+.footer-button:active {
+  transform: translateY(1px);
+}
+
+@media all and (min-width: 600px) {
+  .footer-button {
+    bottom: 20px;
+    top: unset;
+  }
+
+  section {
+    display: inline-flex;
+    margin-bottom: 40px;
+    margin-left: 40px;
+    width: auto;
+  }
+}
+
+@media all and (min-width: 1600px) {
+  :root {
+    --skyHeight: 500px;
+  }
+
+  .universe:has(.sky.rotate-left-enter) {
+      --universeTranslateY: 0px;
+      --skyHeight: 600px;
+      --skyHeightDelta: 65px;
+      --skyTranslateY: -175px;
+    }
+
+  .universe:has(.sky.rotate-right-enter) {
+      --universeTranslateY: 0px;
+      --skyHeight: 600px;
+      --skyHeightDelta: 65px;
+      --skyTranslateY: -175px;
+    }
+
+  .universe:has(.sky.rotate-left-enter.slide-down-enter) {
+      --skyHeight: 600px;
+      --skyHeightDelta: 100px;
+      --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+      --skyTranslateY: -175px;
+  }
+
+  .universe:has(.sky.rotate-right-enter.slide-down-enter) {
+    --universeTranslateY: 0px;
+    --skyHeight: 600px;
+    --skyHeightDelta: 100px;
+  }
+}
+
+@supports (width: 100dvw) {
+  :root {
+    --vw: 100dvw; 
+  }
+}
+
+@supports (height: 100dvh) {
+  :root { --vh: 100dvh; }
+}
