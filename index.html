@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title></title>
+    <link rel="preload" as="image" href="/world.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/water.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/airship.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/sky2.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/clouds.png" fetchpriority="high">
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  </head>
+
+  <body>
+    <div class="universe">
+      <div class="sky">
+        <div class="haze"></div>
+        <div class="glare"></div>
+      </div>
+
+      <div class="world">
+        <div class="origin-marker"></div>
+      </div>
+      <div class="airship"></div>
+      <div class="shadow"></div>
+    </div>
+
+    <main>
+      <section>
+        <h3>Mike Vattuone</h3>
+        <p>"He does things on the internet."</p>
+        <nav>
+          <ul style="">
+            <li>
+              <a
+                href="https://github.com/mvattuone"
+                target="_blank"
+                rel="noopener noreferrer"
+                >GitHub</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.linkedin.com/in/mvattuone"
+                target="_blank"
+                rel="noopener noreferrer"
+                >LinkedIn</a
+              >
+            </li>
+            <li><a href="mailto:mike@vattuo.net">Say hello</a></li>
+          </ul>
+        </nav>
+      </section>
+
+      <aside>
+        <button id="pause" aria-label="Pause" class="footer-button">⏸</button>
+      </aside>
+    </main>
+
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
