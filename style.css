@@ -78,6 +78,7 @@
   );
   --fovY: 57deg;
   --universePerspective: calc((var(--refH) * 1px / 2) / tan(var(--fovY) / 2));
+  --universePerspectiveOrigin: 50% 50%;
   --skyPositionX: 0px;
   --skyTranslateY: -100px;
   --skyHeightFactor: 0.4959159859976663; /* 425/857 worked */
@@ -180,14 +181,12 @@ body {
 .universe {
   background-color: #222;
 
-  --perspective-origin: 50% 50%;
-
   width: var(--vw);
   height: calc(var(--refH) * 1px);
   position: absolute;
 
   perspective: var(--universePerspective);
-  perspective-origin: var(--perspective-origin);
+  perspective-origin: var(--universePerspectiveOrigin);
 
   transform: translateX(var(--universeRotationShiftX))
     translateY(calc(var(--universeTranslateY) + var(--universeRotationShiftY)))
