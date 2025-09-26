@@ -20,6 +20,6 @@ export function updateUniverse() {
 
   document.documentElement.style.setProperty(
     "--universePerspectiveOriginYOffset",
-    `${newUniversePerspectiveOriginY}px)`,
+    `${newUniversePerspectiveOriginY}px`,
   );
 }

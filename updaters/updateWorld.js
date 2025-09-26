@@ -1,8 +1,8 @@
 import {
   MAX_ALTITUDE,
-  MAX_WORLD_TILT,
+  MAX_ALTITUDE_WORLD_TILT,
   MIN_ALTITUDE,
-  MIN_WORLD_TILT,
+  MIN_ALTITUDE_WORLD_TILT,
 } from "../../constants.js";
 import { getAirshipPosition } from "../state/airship/position.js";
 import { getAirshipAltitude } from "../state/airship/altitude.js";
@@ -16,7 +16,7 @@ export function updateWorld() {
 
   const t = unlerp(MIN_ALTITUDE, MAX_ALTITUDE, airshipAltitude);
 
-  const newWorldTilt = lerp(MIN_WORLD_TILT, MAX_WORLD_TILT, t);
+  const newWorldTilt = lerp(MIN_ALTITUDE_WORLD_TILT, MAX_ALTITUDE_WORLD_TILT, t);
 
   document.documentElement.style.setProperty("--bgX", `${-airshipPosition.x}px`);
   document.documentElement.style.setProperty("--bgY", `${-airshipPosition.y}px`);

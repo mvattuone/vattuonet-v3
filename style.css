@@ -40,7 +40,7 @@
 
 :root {
   --refW: 1512;
-  --refH: 857;
+  --refH: 797;
 
   --vw: 100vw;
   --vh: 100vh;
@@ -81,7 +81,9 @@
   --shadowScreenOffset: 20px;
   --groundAnchorY: calc(var(--refH) * 1px - var(--shadowScreenOffset));
 
-  --universeHeight: var(--vh);
+  /* hack... maybe look into making this clearer later */
+  --universeHeight: 300px;
+
   --universeRotationShiftX: calc(
     -0.5 * var(--universeHeight) * sin(var(--universeRotateZ))
   );
@@ -120,8 +122,8 @@
   --worldRotateZ: 90deg;
   --airshipTranslateZ: 350px;
 
-  --minWorldOriginZ: 311px;
-  --maxWorldOriginZ: 443px;
+  --minWorldOriginZ: 315px;
+  --maxWorldOriginZ: 460px;
 
   --minWorldTranslateZ: 600px;
   --maxWorldTranslateZ: 800px;
@@ -152,7 +154,7 @@
     var(--worldOriginX) - var(--universeShiftXScreen)
   );
   --worldOriginYCorrected: calc(
-    var(--worldOriginY) - var(--universePerspectiveOriginYOffset) - var(--universeShiftYScreen) +
+    var(--worldOriginY) + (var(--universePerspectiveOriginYOffset) / 2) - var(--universeShiftYScreen) +
       var(--universeTranslateY)
   );
   --worldTranslateZPerAltitude: calc(
@@ -184,6 +186,8 @@
   --widthGrossPadding: max(100lvw, calc(var(--refW) * 1px));
   --widthGrossRotateScale: abs(calc(cos(var(--worldTilt)) + sin(var(--worldTilt))));
 
+  --airshipRotationShift: 0px;
+
 
   &:has(.sky.slide-up-enter) {
     --universeTranslateY: -100px;
@@ -196,11 +200,13 @@
   &:has(.sky.rotate-left-enter) {
     --universeRotateZ: -7deg;
     --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+    --airshipRotationShift: calc(var(--universeRotationShiftX) - (30px/2));
   }
 
   &:has(.sky.rotate-right-enter) {
     --universeRotateZ: 7deg;
     --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
+    --airshipRotationShift: calc(var(--universeRotationShiftX) + (30px/2));
   }
 
   &:has(.sky.rotate-right-enter.slide-down-enter) {
@@ -327,7 +333,6 @@ body {
 }
 
 .world {
-
   animation: waterDrift 15s linear infinite;
   width: calc(var(--vw) + var(--widthGrossPadding) * var(--widthGrossRotateScale));
   height: calc((var(--refW) * 1px) + var(--widthGrossPadding) * var(--widthGrossRotateScale)); 
@@ -361,10 +366,11 @@ body {
     var(--shadowScreenOffset) +
     var(--airshipTranslateZ) * sin(var(--worldTilt))
   );
-  left: 50%;
+  left: calc(50% - (var(--airshipRotationShift)));
   transform-origin: 50% 100%;
   transform: translateX(-50%) translateZ(var(--airshipTranslateZ));
   z-index: 999;
+  transition: left 0.3s ease;
 }
 
 .shadow {
@@ -391,9 +397,9 @@ body {
 
 /* For debugging purposes */
 .origin-marker {
-  display: none;
   --markerSize: 5px;
 
+  display: none;
   position: absolute;
   width: var(--markerSize);
   height: var(--markerSize);
