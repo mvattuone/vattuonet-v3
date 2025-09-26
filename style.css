@@ -57,6 +57,29 @@
   --offsetX: calc((var(--vw) - var(--contentW)) / 2);
   --offsetY: calc((var(--vh) - var(--contentH)) / 2);
   --zRef: 1vmin;
+  --worldTiltBaseline: 67deg;
+  --worldTilt: var(--worldTiltBaseline);
+
+  --horizon: calc(
+    (var(--refH) * 1px / 2)
+    - (var(--airshipAltitude) / var(--universePerspective)) *
+      (var(--refH) * 1px / 2) * tan(var(--fovY) / 2)
+    - var(--universePerspective) * tan(var(--worldTilt) - var(--worldTiltBaseline))
+  );
+
+  --horizonBase: calc(
+    (var(--refH) * 1px) / 2
+    - var(--universePerspective) * tan(var(--worldTilt) - var(--worldTiltBaseline))
+  );
+
+  --horizonBase: calc(
+    (var(--refH) * 1px) / 2
+    + var(--universePerspective) * tan(var(--worldTilt) - var(--worldTiltBaseline))
+  );
+  --horizonDelta: abs(calc(var(--horizon) - var(--horizonBase)));
+
+  --shadowScreenOffset: 20px;
+  --groundAnchorY: calc(var(--refH) * 1px - var(--shadowScreenOffset));
 
   --universeHeight: var(--vh);
   --universeRotationShiftX: calc(
@@ -84,8 +107,7 @@
   --universePerspectiveOrigin: var(--universePerspectiveOriginX) calc(var(--universePerspectiveOriginY) + var(--universePerspectiveOriginYOffset));
   --skyPositionX: 0px;
   --skyTranslateY: -100px;
-  --skyHeightFactor: 0.4959159859976663; /* 425/857 worked */
-  --skyHeight: calc(var(--refH) * 1px * var(--skyHeightFactor));
+  --skyHeight: calc(var(--refH) * 1px - var(--horizon));
   --skyWidthOverflow: 100px;
   --universeTranslateY: 0px;
   --universeRotateZ: 0deg;
@@ -94,16 +116,15 @@
   --airshipTranslateX: -50%;
   --airshipTranslateY: -50%;
   --worldOriginX: 50%;
-  --worldOriginY: 50%;
+  --worldOriginY: var(--groundAnchorY);
   --worldRotateZ: 90deg;
-  --worldTilt: 67deg;
   --airshipTranslateZ: 350px;
 
-  --minWorldOriginZ: 310px;
-  --maxWorldOriginZ: 340px;
+  --minWorldOriginZ: 311px;
+  --maxWorldOriginZ: 443px;
 
-  --minWorldTranslateZ: 610px;
-  --maxWorldTranslateZ: 690px;
+  --minWorldTranslateZ: 600px;
+  --maxWorldTranslateZ: 800px;
   --minAltitude: 0px;
   --maxAltitude: 100px;
   --minAltitudeRaw: 0;
@@ -158,45 +179,11 @@
     ),
     var(--maxWorldOriginZ)
   );
-}
 
-@keyframes waterDrift {
-  from {
-    --waterX: 0px;
-    --waterY: 0px;
-  }
-  to {
-    --waterX: calc(-1 * var(--waterTileSize));
-    --waterY: 0px;
-  }
-}
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: var(--vw);
-  height: var(--vh);
-  font-family: "Inter", sans-serif;
-}
+  --widthGrossPadding: max(100lvw, calc(var(--refW) * 1px));
+  --widthGrossRotateScale: abs(calc(cos(var(--worldTilt)) + sin(var(--worldTilt))));
 
-.universe {
-  background-color: #222;
-
-  width: var(--vw);
-  height: calc(var(--refH) * 1px);
-  position: absolute;
-
-  perspective: var(--universePerspective);
-  perspective-origin: var(--universePerspectiveOrigin);
-
-  transform: translateX(var(--universeRotationShiftX))
-    translateY(calc(var(--universeTranslateY) + var(--universeRotationShiftY)))
-    rotateZ(var(--universeRotateZ));
-  transition:
-    transform 0.3s ease,
-    width 0.3s ease;
 
   &:has(.sky.slide-up-enter) {
     --universeTranslateY: -100px;
@@ -230,6 +217,46 @@ body {
   }
 }
 
+@keyframes waterDrift {
+  from {
+    --waterX: 0px;
+    --waterY: 0px;
+  }
+  to {
+    --waterX: calc(-1 * var(--waterTileSize));
+    --waterY: 0px;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: var(--vw);
+  height: var(--vh);
+  font-family: "Inter", sans-serif;
+  mask: linear-gradient(#000 0 0);
+}
+
+.universe {
+  background-color: #222;
+
+  width: var(--vw);
+  height: calc(var(--refH) * 1px);
+  position: absolute;
+
+  perspective: var(--universePerspective);
+  perspective-origin: var(--universePerspectiveOrigin);
+
+  transform: translateX(var(--universeRotationShiftX))
+    translateY(calc(var(--universeTranslateY) + var(--universeRotationShiftY)))
+    rotateZ(var(--universeRotateZ));
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+}
+
 .universe:has(.sky.rotate-left-enter) .world,
 .universe:has(.sky.rotate-right-enter) .world {
   animation-play-state: paused;
@@ -250,7 +277,7 @@ body {
         var(--skyPositionX) - var(--skyHeightDelta) *
           sin(var(--universeRotateZ))
       )
-      calc(0px + var(--skyHeightDelta) * cos(var(--universeRotateZ))),
+      calc(var(--horizonDelta) + var(--skyHeightDelta) * cos(var(--universeRotateZ))),
     calc(var(--skyPositionX)) 0;
   z-index: 1;
   transform: translateX(var(--skyTranslateX)) translateY(var(--skyTranslateY));
@@ -300,13 +327,12 @@ body {
 }
 
 .world {
-  /* Counter the universe's on-screen shift at the world's pivot */
 
   animation: waterDrift 15s linear infinite;
-  width: var(--vw);
-  height: calc(var(--refW) * 1px); /* square plane, same as you had */
+  width: calc(var(--vw) + var(--widthGrossPadding) * var(--widthGrossRotateScale));
+  height: calc((var(--refW) * 1px) + var(--widthGrossPadding) * var(--widthGrossRotateScale)); 
   transform-style: preserve-3d;
-  transform: rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ))
+  transform: translateX(calc(-1 * (var(--widthGrossPadding) * var(--widthGrossRotateScale)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ))
     translateZ(var(--clampedWorldTranslateZ));
   transform-origin: var(--worldOriginXCorrected) var(--worldOriginYCorrected)
     var(--clampedWorldOriginZ);
@@ -330,20 +356,14 @@ body {
   width: 72px;
   height: 72px;
   position: absolute;
+  /* Keep screen anchor 20px from viewport bottom while factoring Z */
   bottom: calc(
-    clamp(
-        calc(var(--minAltitude) * sin(var(--worldTilt))),
-        var(--airshipAltitude),
-        var(--maxAltitude)
-      ) +
-      var(--airshipTranslateZ) * sin(var(--worldTilt))
+    var(--shadowScreenOffset) +
+    var(--airshipTranslateZ) * sin(var(--worldTilt))
   );
   left: 50%;
-  transform: translate3d(
-    var(--airshipTranslateX),
-    var(--airshipTranslateY),
-    var(--airshipTranslateZ)
-  );
+  transform-origin: 50% 100%;
+  transform: translateX(-50%) translateZ(var(--airshipTranslateZ));
   z-index: 999;
 }
 
