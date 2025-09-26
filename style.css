@@ -78,7 +78,10 @@
   );
   --fovY: 57deg;
   --universePerspective: calc((var(--refH) * 1px / 2) / tan(var(--fovY) / 2));
-  --universePerspectiveOrigin: 50% 50%;
+  --universePerspectiveOriginX: 50%;
+  --universePerspectiveOriginY: 50%;
+  --universePerspectiveOriginYOffset: 0px;
+  --universePerspectiveOrigin: var(--universePerspectiveOriginX) calc(var(--universePerspectiveOriginY) + var(--universePerspectiveOriginYOffset));
   --skyPositionX: 0px;
   --skyTranslateY: -100px;
   --skyHeightFactor: 0.4959159859976663; /* 425/857 worked */
@@ -128,7 +131,7 @@
     var(--worldOriginX) - var(--universeShiftXScreen)
   );
   --worldOriginYCorrected: calc(
-    var(--worldOriginY) - var(--universeShiftYScreen) +
+    var(--worldOriginY) - var(--universePerspectiveOriginYOffset) - var(--universeShiftYScreen) +
       var(--universeTranslateY)
   );
   --worldTranslateZPerAltitude: calc(
