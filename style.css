@@ -144,10 +144,10 @@
   --airshipTranslateZ: 350px;
   --airshipAltitudeYGain: 0.8;
 
-  --minWorldOriginZ: 315px;
+  --minWorldOriginZ: 180px;
   --maxWorldOriginZ: 480px;
 
-  --minWorldTranslateZ: 600px;
+  --minWorldTranslateZ: 400px;
   --maxWorldTranslateZ: 800px;
   --minAltitude: 0px;
   --maxAltitude: 100px;
