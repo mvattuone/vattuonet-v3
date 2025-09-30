@@ -94,10 +94,16 @@
   --offsetY: calc((var(--vh) - var(--contentH)) / 2);
   --zRef: 1vmin;
   --worldTiltBaseline: 67deg;
+  --worldTiltAtMaxAltitude: 67deg;
+  --worldTiltAtMinAltitude: 72deg;
   --worldTiltOffset: 0deg;
-  --worldTilt: calc(var(--worldTiltBaseline) + var(--worldTiltOffset));
+  --worldTiltFromAltitude: calc(
+    var(--worldTiltAtMinAltitude) +
+    (var(--worldTiltAtMaxAltitude) - var(--worldTiltAtMinAltitude)) * var(--airshipAltitudeRaw)
+  );
+  --worldTilt: calc(var(--worldTiltFromAltitude) + var(--worldTiltOffset));
 
-  --pitch:  var(--worldTilt) - var(--worldTiltBaseline);
+  --pitch:  var(--worldTiltOffset);
   --horizon: calc(
     (var(--refH) * 1px) / 2
     - var(--universePerspective) * tan(var(--pitch))
@@ -139,7 +145,7 @@
   --airshipAltitudeYGain: 0.8;
 
   --minWorldOriginZ: 315px;
-  --maxWorldOriginZ: 460px;
+  --maxWorldOriginZ: 480px;
 
   --minWorldTranslateZ: 600px;
   --maxWorldTranslateZ: 800px;
@@ -166,7 +172,7 @@
   --shadowScale: 1;
 
   --worldOriginXCorrected: calc(
-    var(--worldOriginX) 
+    var(--worldOriginX)
   );
   --worldOriginYCorrected: calc(
     var(--worldOriginY) + (var(--universePerspectiveOriginYOffset) / 2) +
@@ -380,7 +386,7 @@ body {
   width: calc(var(--vw) + var(--widthGrossPadding) * var(--widthGrossRotateScale));
   height: calc((var(--refW) * 1px) + var(--widthGrossPadding) * var(--widthGrossRotateScale)); 
   transform-style: preserve-3d;
-  transform: translateX(calc(-1 * (var(--widthGrossPadding) * var(--widthGrossRotateScale)) / 2)) rotateX(calc(var(--worldTiltBaseline) + var(--worldTiltOffset))) rotateZ(var(--worldRotateZ))
+  transform: translateX(calc(-1 * (var(--widthGrossPadding) * var(--widthGrossRotateScale)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ))
     translateZ(var(--clampedWorldTranslateZ));
   transform-origin: var(--worldOriginXCorrected) var(--worldOriginYCorrected)
     var(--clampedWorldOriginZ);
