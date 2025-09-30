@@ -114,17 +114,7 @@
   --universeRotationShiftY: calc(
     0.5 * var(--universeHeight) * (1 - cos(var(--universeRotateZ)))
   );
-  /* Net on-screen shift from universe translate + rotation */
-  --_uDx: var(--universeRotationShiftX);
-  --_uDy: calc(var(--universeTranslateY) + var(--universeRotationShiftY));
-  --universeShiftXScreen: calc(
-    var(--_uDx) * cos(var(--universeRotateZ)) - var(--_uDy) *
-      sin(var(--universeRotateZ))
-  );
-  --universeShiftYScreen: calc(
-    var(--_uDx) * sin(var(--universeRotateZ)) + var(--_uDy) *
-      cos(var(--universeRotateZ))
-  );
+
   --fovY: 57deg;
   --universePerspective: calc((var(--refH) * 1px / 2) / tan(var(--fovY) / 2));
   --universePerspectiveOriginX: 50%;
@@ -176,10 +166,10 @@
   --shadowScale: 1;
 
   --worldOriginXCorrected: calc(
-    var(--worldOriginX) - var(--universeShiftXScreen)
+    var(--worldOriginX) 
   );
   --worldOriginYCorrected: calc(
-    var(--worldOriginY) + (var(--universePerspectiveOriginYOffset) / 2) - var(--universeShiftYScreen) +
+    var(--worldOriginY) + (var(--universePerspectiveOriginYOffset) / 2) +
       var(--universeTranslateY)
   );
   --worldTranslateZPerAltitude: calc(
