@@ -401,8 +401,9 @@ body {
     4096px 4096px,
     var(--waterTileSize) var(--waterTileSize);
   background-position:
-    var(--bgX, 0px) var(--bgY, 0px),
-    calc(var(--bgX) + var(--waterX, 0px)) calc(var(--bgY) + var(--waterY, 0px));
+    calc(var(--worldOriginXCorrected) + var(--bgX, 0px)) calc(var(--worldOriginYCorrected) + var(--bgY, 0px)),
+    calc(var(--worldOriginXCorrected) + var(--bgX, 0px) + var(--waterX, 0px))
+      calc(var(--worldOriginYCorrected) + var(--bgY, 0px) + var(--waterY, 0px));
   image-rendering: pixelated;
   position: relative;
   will-change: transform;
