@@ -5,5 +5,5 @@ export function getAirshipDirection() {
 }
 
 export function setAirshipDirection(newDirection) {
-  direction = newDirection;
+  direction = newDirection % 360;
 }
