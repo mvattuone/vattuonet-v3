@@ -204,7 +204,7 @@
   );
 
 
-  --widthGrossPadding: max(100lvw, calc(var(--refW) * 1px));
+  --widthGrossPadding: calc(var(--refW) * 1px);
   --widthGrossRotateScale: abs(calc(cos(var(--worldTiltBaseline)) + sin(var(--worldTiltBaseline))));
 
   --airshipRotationShift: 0px;
@@ -274,7 +274,7 @@ body {
   background-color: #0a2740;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: clip;
   width: var(--vw);
   height: var(--vh);
   font-family: "Inter", sans-serif;
@@ -287,6 +287,8 @@ body {
   width: var(--vw);
   height: calc(var(--refH) * 1px);
   position: absolute;
+
+  clip-path: inset(-200);
 
   perspective: var(--universePerspective);
   perspective-origin: var(--universePerspectiveOrigin);
@@ -382,14 +384,15 @@ body {
 }
 
 .world {
+  --worldHeight: 4700px;
+  --worldTranslateY: calc(-1 * var(--worldHeight) / 2);
+  
   animation: waterDrift 15s linear infinite;
-  width: calc(var(--vw) + var(--widthGrossPadding) * var(--widthGrossRotateScale));
-  height: calc((var(--refW) * 1px) + var(--widthGrossPadding) * var(--widthGrossRotateScale)); 
+  width: calc(var(--vw) + var(--widthGrossPadding));
+  height: var(--worldHeight);
   transform-style: preserve-3d;
-  transform: translateX(calc(-1 * (var(--widthGrossPadding) * var(--widthGrossRotateScale)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ))
-    translateZ(var(--clampedWorldTranslateZ));
-  transform-origin: var(--worldOriginXCorrected) var(--worldOriginYCorrected)
-    var(--clampedWorldOriginZ);
+  transform: translateX(calc(-1 * (var(--widthGrossPadding)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ)) translateY(var(--worldTranslateY)) translateZ(var(--clampedWorldTranslateZ));
+  transform-origin: var( --worldOriginXCorrected) var(--worldOriginYCorrected) var(--clampedWorldOriginZ);
   background-color: #0a2740;
   background-image: url("./world.png"), url("./water.png");
   background-repeat: repeat, repeat;
