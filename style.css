@@ -361,7 +361,7 @@ body {
   left: 0;
   top: 0;
   width: calc(var(--vw) + var(--skyWidthOverflow));
-  height: 430px;
+  height: 200px;
   pointer-events: none;
   z-index: 3;
   transform: translate3d(0, var(--skyHeight), 0);
