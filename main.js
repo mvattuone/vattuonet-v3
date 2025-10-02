@@ -26,86 +26,122 @@ import { setSkyPositionX } from "./state/sky/position.js";
 import { getAirshipDepth } from "./state/airship/depth.js";
 import { getUniversePerspective } from "./state/universe/perspective.js";
 
-function loop() {
-  let paused = getPaused();
-  const pressedKeys = getPressedKeys();
-  if (!paused) {
-    let altitude = getAirshipAltitude();
-    let direction = getAirshipDirection();
-    let spinRate = 0;
-    const speed = 4; // shared movement speed
+import {
+  AIRSHIP_SPEED_PER_SECOND,
+  ALTITUDE_UNITS_PER_SECOND,
+  FRAME_RATE,
+  SPIN_DEGREES_PER_SECOND,
+} from "./constants.js";
 
-    if (pressedKeys.has("ArrowLeft")) {
-      spinRate = 1;
-    }
-    if (pressedKeys.has("ArrowRight")) {
-      spinRate = -1;
-    }
-    if (pressedKeys.has("ArrowUp")) {
-      altitude -= 1;
-      setAirshipAltitude(altitude);
-    }
-    if (pressedKeys.has("ArrowDown")) {
-      altitude += 1;
-      setAirshipAltitude(altitude);
-    }
+let lastFrameTime = null;
+const FRAME_DURATION_MS = 1000 / FRAME_RATE;
+const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
+const MAX_FRAME_LOOPS = 5;
 
-    const angleRad = degToRad(direction);
+let accumulator = 0;
 
-    const universePerspective = getUniversePerspective();
-    const airshipDepth = getAirshipDepth();
-
-    const parallaxFactor = (universePerspective -  airshipDepth) / universePerspective;
-    
-    direction += spinRate;
-    setAirshipDirection(direction);
-
-    if (pressedKeys.has("Space")) {
-      setAirshipPosition((x, y) => ({
-        x: x - Math.sin(angleRad) * speed,
-        y: y - Math.cos(angleRad) * speed,
-      }));
-    }
-
-    const slideDown = pressedKeys.has("Space") && pressedKeys.has("ArrowDown");
-    const slideUp = pressedKeys.has("Space") && pressedKeys.has("ArrowUp");
-    if (slideDown) {
-      setSkySlideState("SLIDE_DOWN");
-    } else if (slideUp) {
-      setSkySlideState("SLIDE_UP");
-    } else {
-      setSkySlideState("DEFAULT");
-    }
-
-    const rotateLeft =
-      pressedKeys.has("Space") && pressedKeys.has("ArrowRight");
-    const rotateRight =
-      pressedKeys.has("Space") && pressedKeys.has("ArrowLeft");
-    if (rotateLeft) {
-      setSkyRotateState("ROTATE_LEFT");
-    } else if (rotateRight) {
-      setSkyRotateState("ROTATE_RIGHT");
-    } else {
-      setSkyRotateState("DEFAULT");
-    }
-
-    if (pressedKeys.has("ArrowLeft") || pressedKeys.has("ArrowRight")) {
-      const parallaxBoost = pressedKeys.has("Space") ? 1.75 : 1;
-      const drift = speed * parallaxFactor * spinRate * parallaxBoost;
-      setSkyPositionX((x) => x + drift);
-    }
-
-    updateWorld();
-    updateAirship();
-    updateAirshipShadow();
-    updateUniverse();
-    updateSky();
-
-    if (demoRunOnLoad) {
-      startDemoScheduler();
-      demoRunOnLoad = false;
-    }
+function step(deltaSeconds) {
+  if (getPaused()) {
+    return;
   }
+
+  const pressedKeys = getPressedKeys();
+  let altitude = getAirshipAltitude();
+  let direction = getAirshipDirection();
+  let spinDirection = 0;
+
+  if (pressedKeys.has("ArrowLeft")) {
+    spinDirection = 1;
+  }
+  if (pressedKeys.has("ArrowRight")) {
+    spinDirection = -1;
+  }
+  if (pressedKeys.has("ArrowUp")) {
+    altitude -= ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
+    setAirshipAltitude(altitude);
+  }
+  if (pressedKeys.has("ArrowDown")) {
+    altitude += ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
+    setAirshipAltitude(altitude);
+  }
+
+  const angleRad = degToRad(direction);
+
+  const universePerspective = getUniversePerspective();
+  const airshipDepth = getAirshipDepth();
+
+  const parallaxFactor = (universePerspective - airshipDepth) / universePerspective;
+
+  direction += spinDirection * SPIN_DEGREES_PER_SECOND * deltaSeconds;
+  setAirshipDirection(direction);
+
+  if (pressedKeys.has("Space")) {
+    const moveDistance = AIRSHIP_SPEED_PER_SECOND * deltaSeconds;
+    setAirshipPosition((x, y) => ({
+      x: x - Math.sin(angleRad) * moveDistance,
+      y: y - Math.cos(angleRad) * moveDistance,
+    }));
+  }
+
+  const slideDown = pressedKeys.has("Space") && pressedKeys.has("ArrowDown");
+  const slideUp = pressedKeys.has("Space") && pressedKeys.has("ArrowUp");
+  if (slideDown) {
+    setSkySlideState("SLIDE_DOWN");
+  } else if (slideUp) {
+    setSkySlideState("SLIDE_UP");
+  } else {
+    setSkySlideState("DEFAULT");
+  }
+
+  const rotateLeft = pressedKeys.has("Space") && pressedKeys.has("ArrowRight");
+  const rotateRight = pressedKeys.has("Space") && pressedKeys.has("ArrowLeft");
+  if (rotateLeft) {
+    setSkyRotateState("ROTATE_LEFT");
+  } else if (rotateRight) {
+    setSkyRotateState("ROTATE_RIGHT");
+  } else {
+    setSkyRotateState("DEFAULT");
+  }
+
+  if (pressedKeys.has("ArrowLeft") || pressedKeys.has("ArrowRight")) {
+    const parallaxBoost = pressedKeys.has("Space") ? 1.75 : 1;
+    const driftPerSecond =
+      AIRSHIP_SPEED_PER_SECOND * parallaxFactor * spinDirection * parallaxBoost;
+    setSkyPositionX((x) => x + driftPerSecond * deltaSeconds);
+  }
+
+  updateWorld();
+  updateAirship();
+  updateAirshipShadow();
+  updateUniverse();
+  updateSky();
+
+  if (demoRunOnLoad) {
+    startDemoScheduler();
+    demoRunOnLoad = false;
+  }
+}
+
+function loop(timestamp) {
+  if (lastFrameTime === null) {
+    lastFrameTime = timestamp;
+  }
+
+  const deltaMillis = timestamp - lastFrameTime;
+  lastFrameTime = timestamp;
+
+  accumulator += deltaMillis;
+
+  const maxAccumulated = FRAME_DURATION_MS * MAX_FRAME_LOOPS;
+  if (accumulator > maxAccumulated) {
+    accumulator = maxAccumulated; // prevent runaway catch-up after tab focus change
+  }
+
+  while (accumulator >= FRAME_DURATION_MS) {
+    step(FRAME_DURATION_SECONDS);
+    accumulator -= FRAME_DURATION_MS;
+  }
+
   requestAnimationFrame(loop);
 }
 
