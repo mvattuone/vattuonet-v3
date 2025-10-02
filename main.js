@@ -39,6 +39,7 @@ const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
 const MAX_FRAME_LOOPS = 5;
 
 let accumulator = 0;
+let pausedBeforeVisibilityChange = null;
 
 function step(deltaSeconds) {
   if (getPaused()) {
@@ -145,6 +146,25 @@ function loop(timestamp) {
   requestAnimationFrame(loop);
 }
 
+function handleVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    pausedBeforeVisibilityChange = getPaused();
+    if (!pausedBeforeVisibilityChange) {
+      setPaused(true);
+    }
+    accumulator = 0;
+    lastFrameTime = null;
+    return;
+  }
+
+  if (pausedBeforeVisibilityChange !== null) {
+    setPaused(pausedBeforeVisibilityChange);
+    pausedBeforeVisibilityChange = null;
+  }
+  accumulator = 0;
+  lastFrameTime = null;
+}
+
 // --- simplest scheduler that writes to pressedKeys ---
 // TODO: extract into a separate class or module
 
@@ -239,6 +259,8 @@ function startMeUp() {
     pauseButton.textContent = !demoRunning ? '▶' : '⏸';
     pauseButton.setAttribute('aria-label', !demoRunning ? 'Play' : 'Pause');
   });
+
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   requestAnimationFrame(loop);
 }
