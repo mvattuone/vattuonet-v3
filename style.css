@@ -161,11 +161,15 @@
   --skyTileWidth: 32px;
 
   --glareColorSunsetA: rgba(255, 180, 80, 0.55) 0%;
-  --glareColorSunsetB: rgba(255, 180, 80, 0.25) 12%;
+  --glareColorSunsetB: rgba(255, 180, 80, 0.32) 14%;
+  --glareColorSunsetC: rgba(255, 180, 80, 0.12) 34%;
+  --glareColorSunsetD: rgba(255, 180, 80, 0) 65%;
 
   --glareColorDaylightA: rgba(160, 220, 255, 0.55) 0%;
-  --glareColorDaylightB: rgba(160, 220, 255, 0.25) 12%;
-  --glareColorDaylightC: rgba(255, 180, 80, 0) 50%;
+  --glareColorDaylightB: rgba(160, 220, 255, 0.32) 15%;
+  --glareColorDaylightC: rgba(210, 215, 255, 0.18) 32%;
+  --glareColorDaylightD: rgba(255, 200, 150, 0.08) 50%;
+  --glareColorDaylightE: rgba(255, 180, 80, 0) 72%;
 
   --cloudImageWidth: 1536px;
   --cloudImageHeight: 850px;
@@ -377,9 +381,11 @@ body {
 
   background: linear-gradient(
     to bottom,
-    var(--glareColorDaylightA) 0%,
-    var(--glareColorDaylightB) 12%,
-    var(--glareColorDaylightC) 32%
+    var(--glareColorDaylightA),
+    var(--glareColorDaylightB),
+    var(--glareColorDaylightC),
+    var(--glareColorDaylightD),
+    var(--glareColorDaylightE)
   );
   mix-blend-mode: screen;
 }
