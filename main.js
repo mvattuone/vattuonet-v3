@@ -71,7 +71,8 @@ function step(deltaSeconds) {
   const universePerspective = getUniversePerspective();
   const airshipDepth = getAirshipDepth();
 
-  const parallaxFactor = (universePerspective - airshipDepth) / universePerspective;
+  const parallaxFactor =
+    (universePerspective - airshipDepth) / universePerspective;
 
   direction += spinDirection * SPIN_DEGREES_PER_SECOND * deltaSeconds;
   setAirshipDirection(direction);
@@ -138,7 +139,7 @@ function loop(timestamp) {
     accumulator = maxAccumulated; // prevent runaway catch-up after tab focus change
   }
 
-  while (accumulator >= FRAME_DURATION_MS) {
+  while (accumulator >= FRAME_DURATION_MS && steps < MAX_FRAME_LOOPS) {
     step(FRAME_DURATION_SECONDS);
     accumulator -= FRAME_DURATION_MS;
   }
@@ -168,16 +169,16 @@ function handleVisibilityChange() {
 // --- simplest scheduler that writes to pressedKeys ---
 // TODO: extract into a separate class or module
 
-const sleep  = (ms) => new Promise(r => setTimeout(r, ms));
-const randInt = (min, max) => Math.floor(Math.random()*(max-min+1))+min;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 function press(keys) {
   const s = getPressedKeys();
-  keys.forEach(k => s.add(k));
+  keys.forEach((k) => s.add(k));
 }
 function release(keys) {
   const s = getPressedKeys();
-  keys.forEach(k => s.delete(k));
+  keys.forEach((k) => s.delete(k));
 }
 function releaseAll() {
   const s = getPressedKeys();
@@ -185,15 +186,15 @@ function releaseAll() {
 }
 
 const PATTERNS = {
-  STRAIGHT: { keys: ["Space"],             hold: [800, 2000] },
-  STRAIGHT_UP: { keys: ["Space","ArrowDown"],             hold: [800, 2000] },
-  STRAIGHT_DOWN: { keys: ["Space","ArrowUp"],             hold: [800, 2000] },
-  BANK_R:   { keys: ["Space","ArrowUp","ArrowRight"], hold: [600, 1400] },
-  BANK_L:   { keys: ["Space","ArrowUp","ArrowLeft"],  hold: [600, 1400] },
-  ASCEND:    { keys: ["ArrowDown"],                      hold: [300, 700] },
-  DESCEND:  { keys: ["ArrowUp"],                    hold: [200, 500] },
-  ORBIT_R:  { keys: ["ArrowRight"],    hold: [200,500]},
-  ORBIT_L:  { keys: ["ArrowLeft"],    hold: [180,320] },
+  STRAIGHT: { keys: ["Space"], hold: [800, 2000] },
+  STRAIGHT_UP: { keys: ["Space", "ArrowDown"], hold: [800, 2000] },
+  STRAIGHT_DOWN: { keys: ["Space", "ArrowUp"], hold: [800, 2000] },
+  BANK_R: { keys: ["Space", "ArrowUp", "ArrowRight"], hold: [600, 1400] },
+  BANK_L: { keys: ["Space", "ArrowUp", "ArrowLeft"], hold: [600, 1400] },
+  ASCEND: { keys: ["ArrowDown"], hold: [300, 700] },
+  DESCEND: { keys: ["ArrowUp"], hold: [200, 500] },
+  ORBIT_R: { keys: ["ArrowRight"], hold: [200, 500] },
+  ORBIT_L: { keys: ["ArrowLeft"], hold: [180, 320] },
 };
 
 function pickPatternName() {
@@ -210,7 +211,7 @@ function pickPatternName() {
   return "STRAIGHT";
 }
 
-const SLEEP_CHANCE = 1/7;
+const SLEEP_CHANCE = 1 / 7;
 
 async function maybeSleep(msMin = 200, msMax = 600) {
   if (Math.random() < SLEEP_CHANCE) {
@@ -244,21 +245,28 @@ function stopDemoScheduler() {
   releaseAll();
 }
 
+const pauseButton = document.querySelector("#pause");
+
+function toggleDemoScheduler() {
+  demoRunning ? stopDemoScheduler() : startDemoScheduler();
+  pauseButton.textContent = !demoRunning ? "▶" : "⏸";
+  pauseButton.setAttribute("aria-label", !demoRunning ? "Play" : "Pause");
+}
+
 function startMeUp() {
   addControlListeners();
   window.addEventListener("keydown", (e) => {
     if (e.code === "KeyP" && !e.repeat) {
       setPaused(!getPaused());
     }
+
+    if (e.code === "Tab" && !e.repeat) {
+      toggleDemoScheduler();
+    }
   });
 
-  const pauseButton = document.querySelector('#pause');
 
-  pauseButton.addEventListener('click', () => {
-    demoRunning ? stopDemoScheduler() : startDemoScheduler();
-    pauseButton.textContent = !demoRunning ? '▶' : '⏸';
-    pauseButton.setAttribute('aria-label', !demoRunning ? 'Play' : 'Pause');
-  });
+  pauseButton.addEventListener("click", () => toggleDemoScheduler);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
 

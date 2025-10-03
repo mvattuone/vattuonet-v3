@@ -49,7 +49,7 @@
 }
 @property --skyWidthOverflow {
   syntax: "<length>";
-  initial-value: 100px;
+  initial-value: 150px;
   inherits: true;
 }
 @property --universeTranslateY { syntax: "<length>"; initial-value: 0px; inherits: true; }
@@ -128,10 +128,10 @@
   --universePerspectiveOriginYOffset: 0px;
   --universePerspectiveOrigin: var(--universePerspectiveOriginX) calc(var(--universePerspectiveOriginY) + var(--universePerspectiveOriginYOffset));
   --skyPositionX: 0px;
-  --skyTranslateY: -200px;
-  --skySlideYOffset: 100px;
+  --skyTranslateY: -300px;
+  --skySlideYOffset: 200px;
   --skyHeight: calc(var(--refH) * 1px - var(--horizon) + var(--skySlideYOffset));
-  --skyWidthOverflow: 100px;
+  --skyWidthOverflow: 150px;
   --universeTranslateY: 0px;
   --universeRotateZ: 0deg;
   --skyTranslateX: 0px;
@@ -209,7 +209,6 @@
   );
 
 
-  --widthGrossPadding: calc(var(--refW) * 1px);
   --widthGrossRotateScale: abs(calc(cos(var(--worldTiltBaseline)) + sin(var(--worldTiltBaseline))));
 
   --airshipRotationShift: 0px;
@@ -244,7 +243,8 @@
   &:has(.sky.rotate-left-exit)  {
     transition:
       --universeRotateZ 0.3s ease,
-      --skyTranslateX 0.3s ease;
+      --skyTranslateX 0.3s ease,
+      --airshipRotationShift 0.3s ease;
   }
 }
 
@@ -276,7 +276,7 @@
 
 html,
 body {
-  background-color: #0a2740;
+  background-color: transparent;
   margin: 0;
   padding: 0;
   overflow: clip;
@@ -287,13 +287,13 @@ body {
 }
 
 .universe {
-  background-color: #0a2740;
+  background-color: transparent;
 
   width: var(--vw);
   height: calc(var(--refH) * 1px);
   position: absolute;
 
-  clip-path: inset(-200);
+  clip-path: inset(-200px);
 
   perspective: var(--universePerspective);
   perspective-origin: var(--universePerspectiveOrigin);
@@ -311,10 +311,10 @@ body {
 
 
   &:has(.sky.slide-down-enter) {
-    --universeTranslateY: var(--skySlideYOffset);
+    --universeTranslateY: 100px;
   }
   &:has(.sky.slide-up-enter) {
-    --universeTranslateY: calc(var(--skySlideYOffset) * -1);
+    --universeTranslateY: -100px;
   }
 
   &:has(.sky.rotate-left-enter) .world,
@@ -391,14 +391,15 @@ body {
 }
 
 .world {
-  --worldHeight: 4700px;
+  --worldHeight: 4800px;
   --worldTranslateY: calc(-1 * var(--worldHeight) / 2);
+  --worldWidthOverscan: 1600px;
   
   animation: waterDrift 15s linear infinite;
-  width: calc(var(--vw) + var(--widthGrossPadding));
+  width: calc(var(--vw) + var(--worldWidthOverscan));
   height: var(--worldHeight);
   transform-style: preserve-3d;
-  transform: translateX(calc(-1 * (var(--widthGrossPadding)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ)) translateY(var(--worldTranslateY)) translateZ(var(--clampedWorldTranslateZ));
+  transform: translateX(calc(-1 * (var(--worldWidthOverscan)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ)) translateY(var(--worldTranslateY)) translateZ(var(--clampedWorldTranslateZ));
   transform-origin: var( --worldOriginXCorrected) var(--worldOriginYCorrected) var(--clampedWorldOriginZ);
   background-color: #0a2740;
   background-image: url("./world.png"), url("./water.png");
@@ -412,7 +413,8 @@ body {
       calc(var(--worldOriginYCorrected) + var(--bgY, 0px) + var(--waterY, 0px));
   image-rendering: pixelated;
   position: relative;
-  will-change: transform;
+  will-change: transform, background-position, transform-origin;
+  backface-visibility: hidden;
   transition: --worldTiltOffset 0.3s ease;
 }
 
@@ -555,34 +557,19 @@ aside {
   }
 }
 
+@media all and (min-height: 900px) {
+  .universe {
+    clip-path: inset(-800px);
+  }
+
+  .world {
+    --worldHeight: 6000px;
+  }
+}
+
 @media all and (min-width: 1600px) {
-
-  .universe:has(.sky.rotate-left-enter) {
-      --universeTranslateY: 0px;
-      --skyTranslateY: -175px;
-    }
-
-  .universe:has(.sky.rotate-right-enter) {
-      --universeTranslateY: 0px;
-      --skyTranslateY: -175px;
-    }
-
-  .universe:has(.sky.rotate-left-enter.slide-down-enter) {
-      --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
-      --skyTranslateY: -175px;
-      --universeTranslateY: var(--skySlideYOffset);
-  }
-
-  .universe:has(.sky.rotate-right-enter.slide-down-enter) {
-    --universeTranslateY: var(--skySlideYOffset);
-  }
-
-  .universe:has(.sky.rotate-left-enter.slide-up-enter) {
-    --universeTranslateY: calc(var(--skySlideYOffset) * -1);
-  }
-
-  .universe:has(.sky.rotate-right-enter.slide-up-enter) {
-    --universeTranslateY: calc(var(--skySlideYOffset) * -1);
+  .world {
+    --worldWidthOverscan: calc(var(--refW) * 2px);
   }
 }
 
