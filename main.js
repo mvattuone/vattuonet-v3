@@ -33,13 +33,109 @@ import {
   SPIN_DEGREES_PER_SECOND,
 } from "./constants.js";
 
+const DEBUG = false;
+
 let lastFrameTime = null;
 const FRAME_DURATION_MS = 1000 / FRAME_RATE;
 const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
 const MAX_FRAME_LOOPS = 5;
 
+let nextFrameTimeoutId = null;
 let accumulator = 0;
 let pausedBeforeVisibilityChange = null;
+let fpsMeter = null;
+let framesSinceLastFpsSample = 0;
+let fpsSampleTimestamp = null;
+let debugMode = DEBUG;
+
+function initFpsMeter() {
+  if (fpsMeter) {
+    return;
+  }
+
+  const el = document.createElement("div");
+  el.id = "fps-meter";
+  Object.assign(el.style, {
+    position: "fixed",
+    top: "12px",
+    right: "16px",
+    padding: "4px 8px",
+    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontSize: "12px",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    background: "rgba(0, 0, 0, 0.6)",
+    color: "#9be7ff",
+    borderRadius: "4px",
+    pointerEvents: "none",
+    zIndex: "1000",
+  });
+  el.textContent = "-- fps";
+
+  document.body.appendChild(el);
+  fpsMeter = el;
+  applyDebugMode();
+}
+
+function updateFpsMeter(timestamp) {
+  if (!fpsMeter || !debugMode) {
+    return;
+  }
+
+  if (fpsSampleTimestamp === null) {
+    fpsSampleTimestamp = timestamp;
+    framesSinceLastFpsSample = 0;
+    return;
+  }
+
+  framesSinceLastFpsSample += 1;
+  const elapsed = timestamp - fpsSampleTimestamp;
+
+  if (elapsed >= 500) {
+    const fps = Math.round((framesSinceLastFpsSample / elapsed) * 1000);
+    fpsMeter.textContent = `${fps} fps`;
+    fpsSampleTimestamp = timestamp;
+    framesSinceLastFpsSample = 0;
+  }
+}
+
+function resetFpsMeter() {
+  fpsSampleTimestamp = null;
+  framesSinceLastFpsSample = 0;
+  if (fpsMeter) {
+    fpsMeter.textContent = "-- fps";
+  }
+}
+
+function applyDebugMode() {
+  const root = document.documentElement;
+  if (debugMode) {
+    root.classList.add("debug-mode");
+  } else {
+    root.classList.remove("debug-mode");
+  }
+
+  if (fpsMeter) {
+    fpsMeter.style.display = debugMode ? "block" : "none";
+  }
+}
+
+function toggleDebugMode() {
+  debugMode = !debugMode;
+  resetFpsMeter();
+  applyDebugMode();
+}
+
+function scheduleNextFrame() {
+  if (nextFrameTimeoutId !== null) {
+    clearTimeout(nextFrameTimeoutId);
+  }
+
+  nextFrameTimeoutId = setTimeout(() => {
+    nextFrameTimeoutId = null;
+    requestAnimationFrame(loop);
+  }, FRAME_DURATION_MS);
+}
 
 function step(deltaSeconds) {
   if (getPaused()) {
@@ -127,6 +223,8 @@ function step(deltaSeconds) {
 function loop(timestamp) {
   if (lastFrameTime === null) {
     lastFrameTime = timestamp;
+    scheduleNextFrame();
+    return;
   }
 
   const deltaMillis = timestamp - lastFrameTime;
@@ -139,12 +237,15 @@ function loop(timestamp) {
     accumulator = maxAccumulated; // prevent runaway catch-up after tab focus change
   }
 
+  let steps = 0;
   while (accumulator >= FRAME_DURATION_MS && steps < MAX_FRAME_LOOPS) {
     step(FRAME_DURATION_SECONDS);
     accumulator -= FRAME_DURATION_MS;
+    steps += 1;
   }
 
-  requestAnimationFrame(loop);
+  updateFpsMeter(timestamp);
+  scheduleNextFrame();
 }
 
 function handleVisibilityChange() {
@@ -153,6 +254,11 @@ function handleVisibilityChange() {
     if (!pausedBeforeVisibilityChange) {
       setPaused(true);
     }
+    if (nextFrameTimeoutId !== null) {
+      clearTimeout(nextFrameTimeoutId);
+      nextFrameTimeoutId = null;
+    }
+    resetFpsMeter();
     accumulator = 0;
     lastFrameTime = null;
     return;
@@ -162,8 +268,10 @@ function handleVisibilityChange() {
     setPaused(pausedBeforeVisibilityChange);
     pausedBeforeVisibilityChange = null;
   }
+  resetFpsMeter();
   accumulator = 0;
   lastFrameTime = null;
+  scheduleNextFrame();
 }
 
 // --- simplest scheduler that writes to pressedKeys ---
@@ -255,7 +363,16 @@ function toggleDemoScheduler() {
 
 function startMeUp() {
   addControlListeners();
+  initFpsMeter();
+  resetFpsMeter();
+  applyDebugMode();
   window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.code === "KeyD" && !e.repeat) {
+      e.preventDefault();
+      toggleDebugMode();
+      return;
+    }
+
     if (e.code === "KeyP" && !e.repeat) {
       setPaused(!getPaused());
     }
@@ -274,3 +391,5 @@ function startMeUp() {
 }
 
 startMeUp();
+
+window.toggleDebugMode = toggleDebugMode;

@@ -475,6 +475,10 @@ body {
   transform: translateZ(1px);
 }
 
+.debug-mode .origin-marker {
+  display: block;
+}
+
 main {
   display: flex;
   flex-direction: column;
