@@ -81,6 +81,9 @@
   --vw: 100vw;
   --vh: 100vh;
 
+  --pixelZoom: 1;
+  --pixelScaleComp: 1;
+
   --sx: calc(var(--vw) / var(--refW));
   --sy: calc(var(--vh) / var(--refH));
 
@@ -284,6 +287,28 @@ body {
   height: var(--vh);
   font-family: "Inter", sans-serif;
   mask: linear-gradient(#000 0 0);
+}
+
+.app-root {
+  position: relative;
+  width: var(--vw);
+  height: var(--vh);
+  transform-origin: top left;
+}
+
+@supports (zoom: 1) {
+  .app-root {
+    zoom: var(--pixelZoom);
+    transform: scale(var(--pixelScaleComp));
+  }
+}
+
+@supports not (zoom: 1) {
+  .app-root {
+    width: calc(var(--vw) / var(--pixelScaleComp));
+    height: calc(var(--vh) / var(--pixelScaleComp));
+    transform: scale(var(--pixelScaleComp));
+  }
 }
 
 .universe {

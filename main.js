@@ -35,6 +35,45 @@ import {
 
 const DEBUG = false;
 
+const PIXEL_RATIO_QUERIES = [1, 1.5, 2, 3, 4];
+let lastKnownDevicePixelRatio = window.devicePixelRatio || 1;
+
+function setPixelScaleVariables(pixelRatio) {
+  const ratio = Math.max(pixelRatio, 1);
+  const zoom = ratio > 1 ? Number((1 / ratio).toFixed(6)) : 1;
+  const compensation = ratio > 1 ? Number(ratio.toFixed(6)) : 1;
+
+  const root = document.documentElement;
+  root.style.setProperty("--pixelZoom", `${zoom}`);
+  root.style.setProperty("--pixelScaleComp", `${compensation}`);
+}
+
+function initializePixelScaleHandling() {
+  const handlePixelRatioChange = () => {
+    const ratio = window.devicePixelRatio || 1;
+    if (ratio === lastKnownDevicePixelRatio) {
+      return;
+    }
+    lastKnownDevicePixelRatio = ratio;
+    setPixelScaleVariables(ratio);
+  };
+
+  setPixelScaleVariables(lastKnownDevicePixelRatio);
+
+  window.addEventListener("resize", handlePixelRatioChange);
+
+  if (typeof window.matchMedia === "function") {
+    for (const ratio of PIXEL_RATIO_QUERIES) {
+      const mediaQuery = window.matchMedia(`(resolution: ${ratio}dppx)`);
+      if (typeof mediaQuery.addEventListener === "function") {
+        mediaQuery.addEventListener("change", handlePixelRatioChange);
+      } else if (typeof mediaQuery.addListener === "function") {
+        mediaQuery.addListener(handlePixelRatioChange);
+      }
+    }
+  }
+}
+
 let lastFrameTime = null;
 const FRAME_DURATION_MS = 1000 / FRAME_RATE;
 const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
@@ -72,7 +111,8 @@ function initFpsMeter() {
   });
   el.textContent = "-- fps";
 
-  document.body.appendChild(el);
+  const host = document.querySelector(".app-root") ?? document.body;
+  host.appendChild(el);
   fpsMeter = el;
   applyDebugMode();
 }
@@ -383,13 +423,14 @@ function startMeUp() {
   });
 
 
-  pauseButton.addEventListener("click", () => toggleDemoScheduler);
+  pauseButton.addEventListener("click", toggleDemoScheduler);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   requestAnimationFrame(loop);
 }
 
+initializePixelScaleHandling();
 startMeUp();
 
 window.toggleDebugMode = toggleDebugMode;
