@@ -360,7 +360,7 @@ body {
     calc(var(--cloudImageWidth) / 2) calc(var(--cloudImageHeight) / 2),
     calc(var(--skyTileWidth) * 2) var(--skyHeight);
   background-position:
-    calc(var(--skyPositionX)) 60px,
+    calc(var(--skyPositionX)) 140px,
     calc(var(--skyPositionX) * 0.75) 0;
   z-index: 1;
   transform: translate3d(var(--skyTranslateX), var(--skyTranslateY), 0);
