@@ -49,7 +49,7 @@
 }
 @property --skyWidthOverflow {
   syntax: "<length>";
-  initial-value: 150px;
+  initial-value: 175px;
   inherits: true;
 }
 @property --universeTranslateY { syntax: "<length>"; initial-value: 0px; inherits: true; }
@@ -134,7 +134,7 @@
   --skyTranslateY: -300px;
   --skySlideYOffset: 200px;
   --skyHeight: calc(var(--refH) * 1px - var(--horizon) + var(--skySlideYOffset));
-  --skyWidthOverflow: 150px;
+  --skyWidthOverflow: 175px;
   --universeTranslateY: 0px;
   --universeRotateZ: 0deg;
   --skyTranslateX: 0px;
@@ -416,7 +416,7 @@ body {
 }
 
 .world {
-  --worldHeight: 4800px;
+  --worldHeight: 4900px;
   --worldTranslateY: calc(-1 * var(--worldHeight) / 2);
   --worldWidthOverscan: 1600px;
   
@@ -591,7 +591,7 @@ aside {
   }
 
   .world {
-    --worldHeight: 6000px;
+    --worldHeight: 6400px;
   }
 }
 
