@@ -398,7 +398,6 @@ body {
   animation: waterDrift 15s linear infinite;
   width: calc(var(--vw) + var(--worldWidthOverscan));
   height: var(--worldHeight);
-  transform-style: preserve-3d;
   transform: translateX(calc(-1 * (var(--worldWidthOverscan)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ)) translateY(var(--worldTranslateY)) translateZ(var(--clampedWorldTranslateZ));
   transform-origin: var( --worldOriginXCorrected) var(--worldOriginYCorrected) var(--clampedWorldOriginZ);
   background-color: #0a2740;
