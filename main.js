@@ -35,15 +35,34 @@ import {
 
 const DEBUG = false;
 
+const USER_AGENT = typeof navigator !== "undefined" ? navigator.userAgent : "";
+const NORMALIZED_UA = USER_AGENT.toLowerCase();
+const IS_SAFARI =
+  NORMALIZED_UA.includes("safari") &&
+  !NORMALIZED_UA.includes("chrome") &&
+  !NORMALIZED_UA.includes("crios") &&
+  !NORMALIZED_UA.includes("fxios") &&
+  !NORMALIZED_UA.includes("android") &&
+  !NORMALIZED_UA.includes("edg") &&
+  !NORMALIZED_UA.includes("opera") &&
+  !NORMALIZED_UA.includes("opr");
+
 const PIXEL_RATIO_QUERIES = [1, 1.5, 2, 3, 4];
 let lastKnownDevicePixelRatio = window.devicePixelRatio || 1;
 
 function setPixelScaleVariables(pixelRatio) {
+  const root = document.documentElement;
+
+  if (IS_SAFARI) {
+    root.style.setProperty("--pixelZoom", "1");
+    root.style.setProperty("--pixelScaleComp", "1");
+    return;
+  }
+
   const ratio = Math.max(pixelRatio, 1);
   const zoom = ratio > 1 ? Number((1 / ratio).toFixed(6)) : 1;
   const compensation = ratio > 1 ? Number(ratio.toFixed(6)) : 1;
 
-  const root = document.documentElement;
   root.style.setProperty("--pixelZoom", `${zoom}`);
   root.style.setProperty("--pixelScaleComp", `${compensation}`);
 }

@@ -214,28 +214,24 @@
 
   --widthGrossRotateScale: abs(calc(cos(var(--worldTiltBaseline)) + sin(var(--worldTiltBaseline))));
 
-  --airshipRotationShift: 0px;
+  --airshipRotationShift: var(--universeRotationShiftX);
 
   &:has(.sky.rotate-left-enter) {
     --universeRotateZ: -7deg;
     --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
-    --airshipRotationShift: calc(var(--universeRotationShiftX) - (30px/2));
 
     transition:
       --universeRotateZ 0.3s ease,
-      --skyTranslateX 0.3s ease,
-      --airshipRotationShift 0.3s ease;
+      --skyTranslateX 0.3s ease;
   }
 
   &:has(.sky.rotate-right-enter) {
     --universeRotateZ: 7deg;
     --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
-    --airshipRotationShift: calc(var(--universeRotationShiftX) + (30px/2));
 
     transition:
       --universeRotateZ 0.3s ease,
-      --skyTranslateX 0.3s ease,
-      --airshipRotationShift 0.3s ease;
+      --skyTranslateX 0.3s ease;
   }
 
   &:has(.sky.rotate-left-enter.slide-down-enter) {
@@ -246,8 +242,7 @@
   &:has(.sky.rotate-left-exit)  {
     transition:
       --universeRotateZ 0.3s ease,
-      --skyTranslateX 0.3s ease,
-      --airshipRotationShift 0.3s ease;
+      --skyTranslateX 0.3s ease;
   }
 }
 
@@ -458,7 +453,6 @@ body {
   transform-origin: 50% 100%;
   transform: translateX(-50%) translateZ(var(--airshipTranslateZ));
   z-index: 999;
-  transition: left 0.3s ease;
 }
 
 .shadow {
