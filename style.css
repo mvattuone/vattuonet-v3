@@ -453,7 +453,7 @@ body {
     var(--airshipTranslateZ) * sin(var(--worldTilt)) +
     (var(--airshipAltitude) * var(--airshipAltitudeYGain))
   );
-  left: calc(50% - (var(--airshipRotationShift)));
+  left: 50%;
   transform-origin: 50% 100%;
   transform: translateX(-50%) translateZ(var(--airshipTranslateZ));
   z-index: 999;
