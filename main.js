@@ -72,8 +72,7 @@ function initFpsMeter() {
   });
   el.textContent = "-- fps";
 
-  const host = document.querySelector(".app-root") ?? document.body;
-  host.appendChild(el);
+  document.body.appendChild(el);
   fpsMeter = el;
   applyDebugMode();
 }

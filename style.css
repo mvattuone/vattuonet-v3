@@ -282,28 +282,24 @@ body {
   margin: 0;
   padding: 0;
   overflow: clip;
+  position: relative;
   width: var(--vw);
   height: var(--vh);
   font-family: "Inter", sans-serif;
   mask: linear-gradient(#000 0 0);
-}
-
-.app-root {
-  position: relative;
-  width: var(--vw);
-  height: var(--vh);
   transform-origin: top left;
 }
 
+
 @supports (zoom: 1) {
-  .app-root {
+  body {
     zoom: var(--pixelZoom);
     transform: scale(var(--pixelScaleComp));
   }
 }
 
 @supports not (zoom: 1) {
-  .app-root {
+  body {
     width: calc(var(--vw) / var(--pixelScaleComp));
     height: calc(var(--vh) / var(--pixelScaleComp));
     transform: scale(var(--pixelScaleComp));
