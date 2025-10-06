@@ -1,9 +1,12 @@
 export { degToRad } from "./degToRad.js";
-export { getCSSNumber } from "./getCSSNumber.js";
+export { toggleDemoScheduler } from "./toggleDemoScheduler.js";
 export { getFrameOffset } from "./getFrameOffset.js";
-export { getMovementSpriteRow } from "./getMovementSpriteRow.js";
 export { addControlListeners } from "./addControlListeners.js";
 export { lerp } from "./lerp.js";
+export { togglePause } from "./togglePause.js";
+export { wrap } from "./wrap.js";
+export { toggleDebugMode } from "./toggleDebugMode.js";
 export { unlerp } from "./unlerp.js";
 export { clamp } from "./clamp.js";
-export { wrap } from "./wrap.js";
+export { getCSSNumber } from "./getCSSNumber.js";
+export { getMovementSpriteRow } from "./getMovementSpriteRow.js";
