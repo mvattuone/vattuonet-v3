@@ -39,7 +39,7 @@ import {
 import { getPressedKeys } from "./state/pressedKeys.js";
 import { togglePause } from "./helpers/togglePause.js";
 import { startDemoScheduler, toggleDemoScheduler } from "./helpers/toggleDemoScheduler.js";
-import { updateFpsMeter } from "./helpers/toggleDebugMode.js";
+import { resetFpsMeter, updateFpsMeter } from "./helpers/toggleDebugMode.js";
 import { getDemoRunning } from "./state/demoRunning.js";
 
 

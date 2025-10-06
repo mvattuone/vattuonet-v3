@@ -56,7 +56,7 @@ export function updateFpsMeter(timestamp) {
   }
 }
 
-function resetFpsMeter() {
+export function resetFpsMeter() {
   fpsSampleTimestamp = null;
   framesSinceLastFpsSample = 0;
   if (fpsMeter) {
