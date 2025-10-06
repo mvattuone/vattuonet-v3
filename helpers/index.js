@@ -6,3 +6,4 @@ export { getPressedKeys } from "./getPressedKeys.js";
 export { lerp } from "./lerp.js";
 export { unlerp } from "./unlerp.js";
 export { clamp } from "./clamp.js";
+export { wrap } from "./wrap.js";

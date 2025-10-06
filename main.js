@@ -1,4 +1,4 @@
-import { degToRad } from "./helpers/index.js";
+import { degToRad, wrap } from "./helpers/index.js";
 import {
   addControlListeners,
   getPressedKeys,
@@ -171,7 +171,7 @@ function step(deltaSeconds) {
     (universePerspective - airshipDepth) / universePerspective;
 
   direction += spinDirection * SPIN_DEGREES_PER_SECOND * deltaSeconds;
-  setAirshipDirection(direction);
+  setAirshipDirection(wrap(direction, 360));
 
   if (pressedKeys.has("Space")) {
     const moveDistance = AIRSHIP_SPEED_PER_SECOND * deltaSeconds;
