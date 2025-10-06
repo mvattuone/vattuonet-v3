@@ -1,8 +1,7 @@
 import { getFrameOffset, getMovementSpriteRow, unlerp } from "../helpers/index.js";
-import { getPressedKeys } from "../helpers/getPressedKeys.js";
 import { FRAME_COUNT, MIN_ALTITUDE, MAX_ALTITUDE } from "../constants.js";
 import { getAirshipAltitude } from "../state/airship/altitude.js";
-
+import { getPressedKeys } from "../state/pressedKeys.js";
 
 let currentFrame = 0;
 let lastFrameTime = 0;
@@ -15,7 +14,7 @@ export function updateAirship() {
   const altitude = getAirshipAltitude();
   const timestamp = performance.now();
   const pressedKeys = getPressedKeys();
-  const isMoving = pressedKeys.has("Space");
+  const isMoving = pressedKeys.Space;
   const frameInterval = isMoving ? 25 : 100;
 
   if (timestamp - lastFrameTime > frameInterval) {

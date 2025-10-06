@@ -2,7 +2,7 @@ export { degToRad } from "./degToRad.js";
 export { getCSSNumber } from "./getCSSNumber.js";
 export { getFrameOffset } from "./getFrameOffset.js";
 export { getMovementSpriteRow } from "./getMovementSpriteRow.js";
-export { getPressedKeys } from "./getPressedKeys.js";
+export { addControlListeners } from "./addControlListeners.js";
 export { lerp } from "./lerp.js";
 export { unlerp } from "./unlerp.js";
 export { clamp } from "./clamp.js";

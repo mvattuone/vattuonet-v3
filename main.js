@@ -1,8 +1,7 @@
 import { degToRad, wrap } from "./helpers/index.js";
 import {
   addControlListeners,
-  getPressedKeys,
-} from "./helpers/getPressedKeys.js";
+} from "./helpers/addControlListeners.js";
 import {
   updateAirship,
   updateAirshipShadow,
@@ -32,6 +31,7 @@ import {
   FRAME_RATE,
   SPIN_DEGREES_PER_SECOND,
 } from "./constants.js";
+import { getPressedKeys, initialPressedKeys, setPressedKeys } from "./state/pressedKeys.js";
 
 const DEBUG = false;
 
@@ -147,17 +147,17 @@ function step(deltaSeconds) {
   let direction = getAirshipDirection();
   let spinDirection = 0;
 
-  if (pressedKeys.has("ArrowLeft")) {
+  if (pressedKeys.ArrowLeft) {
     spinDirection = 1;
   }
-  if (pressedKeys.has("ArrowRight")) {
+  if (pressedKeys.ArrowRight) {
     spinDirection = -1;
   }
-  if (pressedKeys.has("ArrowUp")) {
+  if (pressedKeys.ArrowUp) {
     altitude -= ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
     setAirshipAltitude(altitude);
   }
-  if (pressedKeys.has("ArrowDown")) {
+  if (pressedKeys.ArrowDown) {
     altitude += ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
     setAirshipAltitude(altitude);
   }
@@ -173,7 +173,7 @@ function step(deltaSeconds) {
   direction += spinDirection * SPIN_DEGREES_PER_SECOND * deltaSeconds;
   setAirshipDirection(wrap(direction, 360));
 
-  if (pressedKeys.has("Space")) {
+  if (pressedKeys.Space) {
     const moveDistance = AIRSHIP_SPEED_PER_SECOND * deltaSeconds;
     setAirshipPosition((x, y) => ({
       x: x - Math.sin(angleRad) * moveDistance,
@@ -181,8 +181,8 @@ function step(deltaSeconds) {
     }));
   }
 
-  const slideDown = pressedKeys.has("Space") && pressedKeys.has("ArrowDown");
-  const slideUp = pressedKeys.has("Space") && pressedKeys.has("ArrowUp");
+  const slideDown = pressedKeys.Space && pressedKeys.ArrowDown;
+  const slideUp = pressedKeys.Space && pressedKeys.ArrowUp;
   if (slideDown) {
     setSkySlideState("SLIDE_DOWN");
   } else if (slideUp) {
@@ -191,8 +191,8 @@ function step(deltaSeconds) {
     setSkySlideState("DEFAULT");
   }
 
-  const rotateLeft = pressedKeys.has("Space") && pressedKeys.has("ArrowRight");
-  const rotateRight = pressedKeys.has("Space") && pressedKeys.has("ArrowLeft");
+  const rotateLeft = pressedKeys.Space && pressedKeys.ArrowRight;
+  const rotateRight = pressedKeys.Space && pressedKeys.ArrowLeft;
   if (rotateLeft) {
     setSkyRotateState("ROTATE_LEFT");
   } else if (rotateRight) {
@@ -201,8 +201,8 @@ function step(deltaSeconds) {
     setSkyRotateState("DEFAULT");
   }
 
-  if (pressedKeys.has("ArrowLeft") || pressedKeys.has("ArrowRight")) {
-    const parallaxBoost = pressedKeys.has("Space") ? 1.75 : 1;
+  if (pressedKeys.ArrowLeft || pressedKeys.ArrowRight) {
+    const parallaxBoost = pressedKeys.Space ? 1.75 : 1;
     const driftPerSecond =
       AIRSHIP_SPEED_PER_SECOND * parallaxFactor * spinDirection * parallaxBoost;
     setSkyPositionX((x) => x + driftPerSecond * deltaSeconds);
@@ -274,23 +274,28 @@ function handleVisibilityChange() {
   scheduleNextFrame();
 }
 
-// --- simplest scheduler that writes to pressedKeys ---
-// TODO: extract into a separate class or module
-
+// TODO: extract into a separate module
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 function press(keys) {
-  const s = getPressedKeys();
-  keys.forEach((k) => s.add(k));
+  const newPressedKeys = {}
+  keys.forEach(key => {
+    newPressedKeys[key] = true;
+  });
+  setPressedKeys((pressedKeys) => ({ ...pressedKeys, ...newPressedKeys }));
 }
+
 function release(keys) {
-  const s = getPressedKeys();
-  keys.forEach((k) => s.delete(k));
+  const newPressedKeys = {}
+  keys.forEach(key => {
+    newPressedKeys[key] = false;
+  });
+  setPressedKeys((pressedKeys) => ({ ...pressedKeys, ...newPressedKeys }));
 }
+
 function releaseAll() {
-  const s = getPressedKeys();
-  s.clear();
+  setPressedKeys(() => initialPressedKeys);
 }
 
 const PATTERNS = {
