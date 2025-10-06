@@ -1,3 +1,4 @@
+
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -215,6 +216,9 @@
   --widthGrossRotateScale: abs(calc(cos(var(--worldTiltBaseline)) + sin(var(--worldTiltBaseline))));
 
   --airshipRotationShift: var(--universeRotationShiftX);
+
+  --pixelZoom: 1; 
+  --pixelScaleComp: 1;
 
   &:has(.sky.rotate-left-enter) {
     --universeRotateZ: -7deg;
@@ -595,6 +599,34 @@ aside {
   }
 }
 
+@media (resolution: 1.5dppx), (-webkit-min-device-pixel-ratio: 1.5) {
+  :root{
+    --pixelZoom: 0.666667;
+    --pixelScaleComp: 1.5;
+  }
+}
+
+@media (resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
+  :root{
+    --pixelZoom: 0.5;
+    --pixelScaleComp: 2;
+  }
+}
+
+@media (resolution: 3dppx), (-webkit-min-device-pixel-ratio: 3) {
+  :root{
+    --pixelZoom: 0.333333;
+    --pixelScaleComp: 3;
+  }
+}
+
+@media (resolution: 4dppx), (-webkit-min-device-pixel-ratio: 4) {
+  :root{
+    --pixelZoom: 0.25;
+    --pixelScaleComp: 4;
+  }
+}
+
 @supports (width: 100dvw) {
   :root {
     --vw: 100dvw; 
@@ -603,4 +635,12 @@ aside {
 
 @supports (height: 100dvh) {
   :root { --vh: 100dvh; }
+}
+
+
+@supports (font: -apple-system-body) {
+  :root{
+    --pixelZoom: 1;
+    --pixelScaleComp: 1;
+  }
 }
