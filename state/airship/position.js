@@ -1,4 +1,4 @@
-import { getCSSNumber } from "../../helpers";
+import { getCSSNumber } from "../../helpers/index.js";
 
 let airshipPosition = {
   x: getCSSNumber(
