@@ -12,15 +12,10 @@ function hasAny(classList, classNames) {
   return false;
 }
 
-// Determine sprite row based on motion/rotation classes applied to the airship.
-export function getMovementSpriteRow(
-  airship = document.querySelector(".airship"),
-) {
-  if (!airship) {
-    return 0;
-  }
-
-  const { classList } = airship;
+// Determine sprite row based on motion/rotation classes applied to the sky.
+export function getMovementSpriteRow() {
+  const sky = document.querySelector('.sky');
+  const { classList } = sky;
   const right = hasAny(classList, ROTATE_LEFT_CLASSES);
   const left = hasAny(classList, ROTATE_RIGHT_CLASSES);
   const up = hasAny(classList, SLIDE_UP_CLASSES);
