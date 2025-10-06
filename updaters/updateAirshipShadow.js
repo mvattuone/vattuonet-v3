@@ -8,6 +8,6 @@ export function updateAirshipShadow() {
 
   document.documentElement.style.setProperty(
     "--shadowScale",
-    1 - 0.5 * altitudeRaw,
+    1 - (altitudeRaw / 2),
   );
 }

@@ -76,6 +76,9 @@
 @property --waterTileSize { syntax: "<length>"; initial-value: 512px; inherits: true; }
 
 :root {
+  --bgX: 0;
+  --bgY: 0;
+
   --refW: 1512;
   --refH: 797;
 
@@ -427,9 +430,9 @@ body {
     4096px 4096px,
     var(--waterTileSize) var(--waterTileSize);
   background-position:
-    calc(var(--worldOriginXCorrected) + var(--bgX, 0px)) calc(var(--worldOriginYCorrected) + var(--bgY, 0px)),
-    calc(var(--worldOriginXCorrected) + var(--bgX, 0px) + var(--waterX, 0px))
-      calc(var(--worldOriginYCorrected) + var(--bgY, 0px) + var(--waterY, 0px));
+    calc(var(--worldOriginXCorrected) + var(--bgX)) calc(var(--worldOriginYCorrected) + var(--bgY)),
+    calc(var(--worldOriginXCorrected) + var(--bgX) + var(--waterX, 0px))
+      calc(var(--worldOriginYCorrected) + var(--bgY) + var(--waterY, 0px));
   image-rendering: pixelated;
   position: relative;
   will-change: transform, background-position, transform-origin;

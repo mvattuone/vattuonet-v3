@@ -1,4 +1,4 @@
-import { degToRad, wrap } from "./helpers/index.js";
+import { clamp, degToRad, wrap } from "./helpers/index.js";
 import {
   addControlListeners,
 } from "./helpers/addControlListeners.js";
@@ -29,7 +29,12 @@ import {
   AIRSHIP_SPEED_PER_SECOND,
   ALTITUDE_UNITS_PER_SECOND,
   FRAME_RATE,
+  MAP_HEIGHT,
+  MAP_WIDTH,
+  MAX_ALTITUDE,
+  MIN_ALTITUDE,
   SPIN_DEGREES_PER_SECOND,
+  SKY_WRAP_WIDTH,
 } from "./constants.js";
 import { getPressedKeys, initialPressedKeys, setPressedKeys } from "./state/pressedKeys.js";
 
@@ -154,14 +159,12 @@ function step(deltaSeconds) {
   }
   if (pressedKeys.ArrowUp) {
     altitude -= ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
-    setAirshipAltitude(altitude);
+    setAirshipAltitude(clamp(altitude, MIN_ALTITUDE, MAX_ALTITUDE));
   }
   if (pressedKeys.ArrowDown) {
     altitude += ALTITUDE_UNITS_PER_SECOND * deltaSeconds;
-    setAirshipAltitude(altitude);
+    setAirshipAltitude(clamp(altitude, MIN_ALTITUDE, MAX_ALTITUDE));
   }
-
-  const angleRad = degToRad(direction);
 
   const universePerspective = getUniversePerspective();
   const airshipDepth = getAirshipDepth();
@@ -173,10 +176,11 @@ function step(deltaSeconds) {
   setAirshipDirection(wrap(direction, 360));
 
   if (pressedKeys.Space) {
+    const angleRad = degToRad(direction);
     const moveDistance = AIRSHIP_SPEED_PER_SECOND * deltaSeconds;
-    setAirshipPosition((x, y) => ({
-      x: x - Math.sin(angleRad) * moveDistance,
-      y: y - Math.cos(angleRad) * moveDistance,
+    setAirshipPosition(({ x, y }) => ({
+      x: wrap(x - Math.sin(angleRad) * moveDistance, MAP_WIDTH),
+      y: wrap(y - Math.cos(angleRad) * moveDistance, MAP_HEIGHT)
     }));
   }
 
@@ -204,7 +208,7 @@ function step(deltaSeconds) {
     const parallaxBoost = pressedKeys.Space ? 1.75 : 1;
     const driftPerSecond =
       AIRSHIP_SPEED_PER_SECOND * parallaxFactor * spinDirection * parallaxBoost;
-    setSkyPositionX((x) => x + driftPerSecond * deltaSeconds);
+    setSkyPositionX((x) => wrap(x + driftPerSecond * deltaSeconds, SKY_WRAP_WIDTH));
   }
 
   updateWorld();

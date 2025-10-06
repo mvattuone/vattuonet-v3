@@ -1,16 +1,21 @@
-import { MAP_HEIGHT, MAP_WIDTH } from "../../../constants.js";
+import { getCSSNumber } from "../../helpers";
 
-let posX = 0;
-let posY = 0;
+let airshipPosition = {
+  x: getCSSNumber(
+    document.documentElement,
+    "--bgX",
+  ),
+  y: getCSSNumber(
+    document.documentElement,
+    "--bgY",
+  ),
+}
 
 export function getAirshipPosition() {
-  return { x: posX, y: posY };
+  return airshipPosition;
 }
 
 export function setAirshipPosition(updater) {
-  const next = updater(posX, posY);
-
-  // Wrap airship's position around the map boundaries
-  posX = ((next.x % MAP_WIDTH) + MAP_WIDTH) % MAP_WIDTH;
-  posY = ((next.y % MAP_HEIGHT) + MAP_HEIGHT) % MAP_HEIGHT;
+  airshipPosition = updater(airshipPosition);
+  return airshipPosition;
 }

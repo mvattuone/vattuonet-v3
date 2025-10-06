@@ -1,17 +1,14 @@
-import { clamp, getCSSNumber } from "../../helpers/index.js";
-import { MAX_ALTITUDE, MIN_ALTITUDE } from "../../constants.js";
+import { getCSSNumber } from "../../helpers/index.js";
 
-const initialAltitude = getCSSNumber(
+let altitude = getCSSNumber(
   document.documentElement,
   "--airshipAltitude",
 );
-
-let altitude = clamp(initialAltitude, MIN_ALTITUDE, MAX_ALTITUDE);
 
 export function getAirshipAltitude() {
   return altitude;
 }
 
 export function setAirshipAltitude(newAltitude) {
-  altitude = clamp(newAltitude, MIN_ALTITUDE, MAX_ALTITUDE);
+  altitude = newAltitude;
 }
