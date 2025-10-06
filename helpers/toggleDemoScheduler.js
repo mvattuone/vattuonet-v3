@@ -5,6 +5,8 @@ import { getDemoRunning, setDemoRunning } from "../state/demoRunning.js";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+const demoButton = document.querySelector('#demo');
+
 function press(keys) {
   const newPressedKeys = {}
   keys.forEach(key => {
@@ -72,18 +74,19 @@ async function runOnePattern() {
 
 function stopDemoScheduler() {
   setDemoRunning(false);
+  demoButton.classList.remove('active');
   releaseAll();
 }
 
 export async function startDemoScheduler() {
   setDemoRunning(true);
   releaseAll();
+  demoButton.classList.add('active');
   while (getDemoRunning()) await runOnePattern();
 }
 
 export function toggleDemoScheduler() {
   const demoButton = document.querySelector("#demo");
   getDemoRunning() ? stopDemoScheduler() : startDemoScheduler();
-  demoButton.classList.toggle('active', getDemoRunning());
   demoButton.setAttribute("aria-label", getDemoRunning() ? "Stop Demo" : "Start Demo");
 }
