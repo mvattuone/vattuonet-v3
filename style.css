@@ -568,6 +568,12 @@ aside {
   transform: translateY(1px);
 }
 
+#pause svg .play { display: none; }
+#pause svg .pause { display: inline; }
+
+#pause.paused svg .play { display: inline; }
+#pause.paused svg .pause { display: none; }
+
 @media all and (min-width: 600px) {
   .footer-button {
     bottom: 20px;

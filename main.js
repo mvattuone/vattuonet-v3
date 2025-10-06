@@ -358,7 +358,7 @@ const pauseButton = document.querySelector("#pause");
 
 function toggleDemoScheduler() {
   demoRunning ? stopDemoScheduler() : startDemoScheduler();
-  pauseButton.textContent = !demoRunning ? "▶" : "⏸";
+  pauseButton.classList.toggle('paused', !demoRunning);
   pauseButton.setAttribute("aria-label", !demoRunning ? "Play" : "Pause");
 }
 
