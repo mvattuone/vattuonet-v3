@@ -38,7 +38,6 @@ const DEBUG = false;
 let lastFrameTime = null;
 const FRAME_DURATION_MS = 1000 / FRAME_RATE;
 const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
-const MAX_FRAME_LOOPS = 5;
 
 let nextFrameTimeoutId = null;
 let accumulator = 0;
@@ -232,16 +231,9 @@ function loop(timestamp) {
 
   accumulator += deltaMillis;
 
-  const maxAccumulated = FRAME_DURATION_MS * MAX_FRAME_LOOPS;
-  if (accumulator > maxAccumulated) {
-    accumulator = maxAccumulated; // prevent runaway catch-up after tab focus change
-  }
-
-  let steps = 0;
-  while (accumulator >= FRAME_DURATION_MS && steps < MAX_FRAME_LOOPS) {
+  while (accumulator >= FRAME_DURATION_MS) {
     step(FRAME_DURATION_SECONDS);
     accumulator -= FRAME_DURATION_MS;
-    steps += 1;
   }
 
   updateFpsMeter(timestamp);
@@ -369,7 +361,6 @@ function toggleDemoScheduler() {
 function startMeUp() {
   addControlListeners();
   initFpsMeter();
-  resetFpsMeter();
   applyDebugMode();
   window.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyD" && !e.repeat) {
