@@ -56,7 +56,14 @@
           </nav>
         </section>
 
-        <aside>
+        <aside class="controls">
+          <button id="map" aria-label="Toggle Map" class="footer-button" type="button">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 5.5 9 3v15l-5 2.5V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M9 3l6 2.5v15l-6-2.5V3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M15 5.5 20 3v15l-5 2.5V5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </button>
           <button id="pause" aria-label="Pause" class="footer-button">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <!-- Play triangle -->
@@ -75,6 +82,14 @@
           </button>
         </aside>
       </main>
+
+      <div class="minimap" data-visible="false">
+        <div class="minimap__frame">
+          <div class="minimap__map">
+            <div class="minimap__airship"></div>
+          </div>
+        </div>
+      </div>
 
     <script src="./main.js" type="module"></script>
   </body>

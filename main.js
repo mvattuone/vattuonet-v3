@@ -6,6 +6,7 @@ import {
   updateAirship,
   updateAirshipShadow,
   updateWorld,
+  updateMiniMap,
 } from "./updaters/index.js";
 import { setAirshipPosition } from "./state/airship/position.js";
 import { getPaused, setPaused } from "./state/paused.js";
@@ -50,6 +51,38 @@ const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
 let nextFrameTimeoutId = null;
 let accumulator = 0;
 let pausedBeforeVisibilityChange = null;
+
+let minimapVisible = false;
+let minimapButton = null;
+let minimapElement = null;
+
+function ensureMiniMapRefs() {
+  if (!minimapButton) {
+    minimapButton = document.querySelector("#map");
+  }
+  if (!minimapElement) {
+    minimapElement = document.querySelector(".minimap");
+  }
+}
+
+function setMiniMapVisibility(visible) {
+  ensureMiniMapRefs();
+  minimapVisible = visible;
+
+  if (minimapElement) {
+    minimapElement.dataset.visible = visible ? "true" : "false";
+  }
+
+  if (minimapButton) {
+    minimapButton.classList.toggle("active", visible);
+    minimapButton.setAttribute("aria-pressed", visible ? "true" : "false");
+    minimapButton.setAttribute("aria-label", visible ? "Hide Map" : "Show Map");
+  }
+}
+
+function toggleMiniMap() {
+  setMiniMapVisibility(!minimapVisible);
+}
 
 
 
@@ -139,6 +172,7 @@ function step(deltaSeconds) {
   updateAirshipShadow();
   updateUniverse();
   updateSky();
+  updateMiniMap();
 }
 
 function loop(timestamp) {
@@ -192,6 +226,8 @@ function handleVisibilityChange() {
 function startMeUp() {
   const pauseButton = document.querySelector("#pause");
   const demoButton = document.querySelector("#demo");
+  minimapButton = document.querySelector("#map");
+  minimapElement = document.querySelector(".minimap");
 
   addControlListeners();
   pauseButton.addEventListener("mousedown", e => e.preventDefault());
@@ -199,6 +235,13 @@ function startMeUp() {
 
   demoButton.addEventListener("mousedown", e => e.preventDefault());
   demoButton.addEventListener("click", toggleDemoScheduler);
+
+  if (minimapButton) {
+    minimapButton.addEventListener("mousedown", (e) => e.preventDefault());
+    minimapButton.addEventListener("click", toggleMiniMap);
+  }
+
+  setMiniMapVisibility(false);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
 

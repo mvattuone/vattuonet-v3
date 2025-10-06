@@ -550,6 +550,7 @@ aside {
   right: 20px;
   display: flex;
   gap: 8px;
+  z-index: 30;
 }
 
 .footer-button {
@@ -582,6 +583,101 @@ aside {
 
 #demo.active {
   opacity: 1;
+}
+
+#map {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+#map.active {
+  opacity: 1;
+}
+
+.minimap {
+  --minimapSize: clamp(160px, 30vw, 220px);
+  position: fixed;
+  width: var(--minimapSize);
+  height: var(--minimapSize);
+  bottom: 24px;
+  right: 24px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+}
+
+.minimap[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.minimap__frame {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: rgba(8, 14, 22, 0.18);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+
+.minimap__map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(30, 52, 68, 0.55);
+  background-image: url("./world.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  filter: saturate(0) contrast(1.18) brightness(0.8) blur(0.35px);
+}
+
+.minimap__airship {
+  position: absolute;
+  top: calc(var(--minimapAirshipY, 0.5) * 100%);
+  left: calc(var(--minimapAirshipX, 0.5) * 100%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(12, 28, 45, 0.85);
+  transform: translate(-50%, -50%);
+  animation: minimapBlink 0.8s steps(1, end) infinite;
+}
+
+@keyframes minimapBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media all and (max-width: 599px) {
+  .minimap {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .minimap[data-visible="true"] {
+    pointer-events: none;
+  }
 }
 
 @media all and (min-width: 600px) {
@@ -673,4 +769,3 @@ button.active {
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.4),
               inset 0 0 20px rgba(0, 255, 136, 0.1);
 }
-
