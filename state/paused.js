@@ -4,6 +4,6 @@ export function getPaused() {
   return paused;
 }
 
-export function setPaused(newPaused) {
-  paused = newPaused;
+export function setPaused(updater) {
+  paused = typeof updater === 'function' ? updater(paused) : updater;
 }

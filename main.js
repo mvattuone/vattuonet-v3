@@ -36,9 +36,12 @@ import {
   SPIN_DEGREES_PER_SECOND,
   SKY_WRAP_WIDTH,
 } from "./constants.js";
-import { getPressedKeys, initialPressedKeys, setPressedKeys } from "./state/pressedKeys.js";
+import { getPressedKeys } from "./state/pressedKeys.js";
+import { togglePause } from "./helpers/togglePause.js";
+import { startDemoScheduler, toggleDemoScheduler } from "./helpers/toggleDemoScheduler.js";
+import { updateFpsMeter } from "./helpers/toggleDebugMode.js";
+import { getDemoRunning } from "./state/demoRunning.js";
 
-const DEBUG = false;
 
 let lastFrameTime = null;
 const FRAME_DURATION_MS = 1000 / FRAME_RATE;
@@ -47,88 +50,8 @@ const FRAME_DURATION_SECONDS = 1 / FRAME_RATE;
 let nextFrameTimeoutId = null;
 let accumulator = 0;
 let pausedBeforeVisibilityChange = null;
-let fpsMeter = null;
-let framesSinceLastFpsSample = 0;
-let fpsSampleTimestamp = null;
-let debugMode = DEBUG;
 
-function initFpsMeter() {
-  if (fpsMeter) {
-    return;
-  }
 
-  const el = document.createElement("div");
-  el.id = "fps-meter";
-  Object.assign(el.style, {
-    position: "fixed",
-    top: "12px",
-    right: "16px",
-    padding: "4px 8px",
-    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    fontSize: "12px",
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    background: "rgba(0, 0, 0, 0.6)",
-    color: "#9be7ff",
-    borderRadius: "4px",
-    pointerEvents: "none",
-    zIndex: "1000",
-  });
-  el.textContent = "-- fps";
-
-  document.body.appendChild(el);
-  fpsMeter = el;
-  applyDebugMode();
-}
-
-function updateFpsMeter(timestamp) {
-  if (!fpsMeter || !debugMode) {
-    return;
-  }
-
-  if (fpsSampleTimestamp === null) {
-    fpsSampleTimestamp = timestamp;
-    framesSinceLastFpsSample = 0;
-    return;
-  }
-
-  framesSinceLastFpsSample += 1;
-  const elapsed = timestamp - fpsSampleTimestamp;
-
-  if (elapsed >= 500) {
-    const fps = Math.round((framesSinceLastFpsSample / elapsed) * 1000);
-    fpsMeter.textContent = `${fps} fps`;
-    fpsSampleTimestamp = timestamp;
-    framesSinceLastFpsSample = 0;
-  }
-}
-
-function resetFpsMeter() {
-  fpsSampleTimestamp = null;
-  framesSinceLastFpsSample = 0;
-  if (fpsMeter) {
-    fpsMeter.textContent = "-- fps";
-  }
-}
-
-function applyDebugMode() {
-  const root = document.documentElement;
-  if (debugMode) {
-    root.classList.add("debug-mode");
-  } else {
-    root.classList.remove("debug-mode");
-  }
-
-  if (fpsMeter) {
-    fpsMeter.style.display = debugMode ? "block" : "none";
-  }
-}
-
-function toggleDebugMode() {
-  debugMode = !debugMode;
-  resetFpsMeter();
-  applyDebugMode();
-}
 
 function scheduleNextFrame() {
   if (nextFrameTimeoutId !== null) {
@@ -216,11 +139,6 @@ function step(deltaSeconds) {
   updateAirshipShadow();
   updateUniverse();
   updateSky();
-
-  if (demoRunOnLoad) {
-    startDemoScheduler();
-    demoRunOnLoad = false;
-  }
 }
 
 function loop(timestamp) {
@@ -270,126 +188,23 @@ function handleVisibilityChange() {
   scheduleNextFrame();
 }
 
-// TODO: extract into a separate module
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-function press(keys) {
-  const newPressedKeys = {}
-  keys.forEach(key => {
-    newPressedKeys[key] = true;
-  });
-  setPressedKeys((pressedKeys) => ({ ...pressedKeys, ...newPressedKeys }));
-}
-
-function release(keys) {
-  const newPressedKeys = {}
-  keys.forEach(key => {
-    newPressedKeys[key] = false;
-  });
-  setPressedKeys((pressedKeys) => ({ ...pressedKeys, ...newPressedKeys }));
-}
-
-function releaseAll() {
-  setPressedKeys(() => initialPressedKeys);
-}
-
-const PATTERNS = {
-  STRAIGHT: { keys: ["Space"], hold: [800, 2000] },
-  STRAIGHT_UP: { keys: ["Space", "ArrowDown"], hold: [800, 2000] },
-  STRAIGHT_DOWN: { keys: ["Space", "ArrowUp"], hold: [800, 2000] },
-  BANK_R: { keys: ["Space", "ArrowUp", "ArrowRight"], hold: [600, 1400] },
-  BANK_L: { keys: ["Space", "ArrowUp", "ArrowLeft"], hold: [600, 1400] },
-  ASCEND: { keys: ["ArrowDown"], hold: [300, 700] },
-  DESCEND: { keys: ["ArrowUp"], hold: [200, 500] },
-  ORBIT_R: { keys: ["ArrowRight"], hold: [200, 500] },
-  ORBIT_L: { keys: ["ArrowLeft"], hold: [180, 320] },
-};
-
-function pickPatternName() {
-  const d = randInt(0, 9);
-  if (d === 1) return "STRAIGHT";
-  if (d === 2) return "STRAIGHT_UP";
-  if (d === 3) return "STRAIGHT_DOWN";
-  if (d === 4) return "BANK_R";
-  if (d === 5) return "BANK_L";
-  if (d === 6) return "ASCEND";
-  if (d === 7) return "DESCEND";
-  if (d === 8) return "ORBIT_R";
-  if (d === 9) return "ORBIT_L";
-  return "STRAIGHT";
-}
-
-const SLEEP_CHANCE = 1 / 7;
-
-async function maybeSleep(msMin = 200, msMax = 600) {
-  if (Math.random() < SLEEP_CHANCE) {
-    await sleep(randInt(msMin, msMax));
-  }
-}
-
-async function runOnePattern() {
-  const name = pickPatternName();
-  const p = PATTERNS[name];
-
-  press(p.keys);
-  await sleep(randInt(p.hold[0], p.hold[1]));
-  release(p.keys);
-
-  await maybeSleep(0, 500);
-}
-
-let demoRunOnLoad = true;
-let demoRunning = false;
-
-async function startDemoScheduler() {
-  if (demoRunning) return;
-  demoRunning = true;
-  releaseAll();
-  while (demoRunning) await runOnePattern();
-}
-
-function stopDemoScheduler() {
-  demoRunning = false;
-  releaseAll();
-}
-
-const pauseButton = document.querySelector("#pause");
-
-function toggleDemoScheduler() {
-  demoRunning ? stopDemoScheduler() : startDemoScheduler();
-  pauseButton.classList.toggle('paused', !demoRunning);
-  pauseButton.setAttribute("aria-label", !demoRunning ? "Play" : "Pause");
-}
 
 function startMeUp() {
+  const pauseButton = document.querySelector("#pause");
+  const demoButton = document.querySelector("#demo");
+
   addControlListeners();
-  initFpsMeter();
-  applyDebugMode();
-  window.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.code === "KeyD" && !e.repeat) {
-      e.preventDefault();
-      toggleDebugMode();
-      return;
-    }
-
-    if (e.code === "KeyP" && !e.repeat) {
-      setPaused(!getPaused());
-    }
-
-    if (e.code === "Tab" && !e.repeat) {
-      toggleDemoScheduler();
-    }
-  });
-
   pauseButton.addEventListener("mousedown", e => e.preventDefault());
-  pauseButton.addEventListener("click", toggleDemoScheduler);
+  pauseButton.addEventListener("click", togglePause);
+
+  demoButton.addEventListener("mousedown", e => e.preventDefault());
+  demoButton.addEventListener("click", toggleDemoScheduler);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  if (getDemoRunning) { startDemoScheduler() }
 
   requestAnimationFrame(loop);
 }
 
 startMeUp();
-
-window.toggleDebugMode = toggleDebugMode;

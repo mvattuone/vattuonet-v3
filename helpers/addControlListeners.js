@@ -1,5 +1,6 @@
 import { setPressedKeys } from "../state/pressedKeys.js";
-
+import { toggleDemoScheduler } from "./toggleDemoScheduler.js";
+import { toggleDebugMode } from "./toggleDebugMode.js";
 
 function keydownHandler(e) {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyD" && !e.repeat) {

@@ -548,6 +548,8 @@ aside {
   position: absolute;
   top: 20px;
   right: 20px;
+  display: flex;
+  gap: 8px;
 }
 
 .footer-button {
@@ -573,6 +575,14 @@ aside {
 
 #pause.paused svg .play { display: inline; }
 #pause.paused svg .pause { display: none; }
+
+#demo {
+  opacity: 0.5;
+}
+
+#demo.active {
+  opacity: 1;
+}
 
 @media all and (min-width: 600px) {
   .footer-button {
@@ -649,3 +659,18 @@ aside {
     --pixelScaleComp: 1;
   }
 }
+
+
+/* Active state - powered on! */
+#demo.active svg {
+  color: #00ff88;
+  filter: drop-shadow(0 0 8px #00ff88) 
+          drop-shadow(0 0 16px #00ff88);
+}
+
+button.active {
+  border-color: #00ff88;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4),
+              inset 0 0 20px rgba(0, 255, 136, 0.1);
+}
+

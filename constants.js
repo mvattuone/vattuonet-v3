@@ -13,3 +13,5 @@ export const AIRSHIP_SPEED_PER_SECOND = 800;
 export const ALTITUDE_UNITS_PER_SECOND = 60;
 export const SPIN_DEGREES_PER_SECOND = 60;
 export const SKY_WRAP_WIDTH = 768; // same as calc(var(--cloudImageWidth) / 2);
+export const DEMO_ACTIVE_ON_LOAD = true;
+export const INITIAL_DEBUG_MODE = false;
