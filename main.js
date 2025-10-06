@@ -382,7 +382,7 @@ function startMeUp() {
     }
   });
 
-
+  pauseButton.addEventListener("mousedown", e => e.preventDefault());
   pauseButton.addEventListener("click", toggleDemoScheduler);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
