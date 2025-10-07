@@ -605,22 +605,6 @@ aside {
 #pause.paused svg .play { display: inline; }
 #pause.paused svg .pause { display: none; }
 
-#demo {
-  opacity: 0.5;
-}
-
-#demo.active {
-  opacity: 1;
-}
-
-#map {
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-#map.active {
-  opacity: 1;
-}
 
 .minimap {
   --minimapSize: clamp(160px, 30vw, 220px);
