@@ -583,6 +583,12 @@ aside {
   z-index: 5;
 }
 
+@media (hover: none) {
+  #controls-toggle {
+    display: none;
+  }
+}
+
 .primary-button {
   appearance: none;
   display: grid;
@@ -768,4 +774,3 @@ aside {
     --pixelScaleComp: 1;
   }
 }
-
