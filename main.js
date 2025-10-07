@@ -56,6 +56,10 @@ let minimapVisible = false;
 let minimapButton = null;
 let minimapElement = null;
 
+let controlsModalVisible = false;
+let controlsToggleButton = null;
+let controlsModalElement = null;
+
 function ensureMiniMapRefs() {
   if (!minimapButton) {
     minimapButton = document.querySelector("#map");
@@ -82,6 +86,39 @@ function setMiniMapVisibility(visible) {
 
 function toggleMiniMap() {
   setMiniMapVisibility(!minimapVisible);
+}
+
+function ensureControlsModalRefs() {
+  if (!controlsToggleButton) {
+    controlsToggleButton = document.querySelector("#controls-toggle");
+  }
+
+  if (!controlsModalElement) {
+    controlsModalElement = document.querySelector(".controls-modal");
+  }
+}
+
+function setControlsModalVisibility(visible) {
+  ensureControlsModalRefs();
+  controlsModalVisible = visible;
+
+  if (controlsModalElement) {
+    controlsModalElement.dataset.visible = visible ? "true" : "false";
+    controlsModalElement.setAttribute("aria-hidden", visible ? "false" : "true");
+  }
+
+  if (controlsToggleButton) {
+    controlsToggleButton.classList.toggle("active", visible);
+    controlsToggleButton.setAttribute("aria-pressed", visible ? "true" : "false");
+    controlsToggleButton.setAttribute(
+      "aria-label",
+      visible ? "Hide Controls" : "Show Controls"
+    );
+  }
+}
+
+function toggleControlsModal() {
+  setControlsModalVisibility(!controlsModalVisible);
 }
 
 
@@ -228,6 +265,8 @@ function startMeUp() {
   const demoButton = document.querySelector("#demo");
   minimapButton = document.querySelector("#map");
   minimapElement = document.querySelector(".minimap");
+  controlsToggleButton = document.querySelector("#controls-toggle");
+  controlsModalElement = document.querySelector(".controls-modal");
 
   addControlListeners();
   pauseButton.addEventListener("mousedown", e => e.preventDefault());
@@ -241,7 +280,13 @@ function startMeUp() {
     minimapButton.addEventListener("click", toggleMiniMap);
   }
 
+  if (controlsToggleButton) {
+    controlsToggleButton.addEventListener("mousedown", (e) => e.preventDefault());
+    controlsToggleButton.addEventListener("click", toggleControlsModal);
+  }
+
   setMiniMapVisibility(false);
+  setControlsModalVisibility(false);
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
 

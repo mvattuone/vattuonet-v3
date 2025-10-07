@@ -82,12 +82,42 @@
               <text x="12" y="15" font-size="7" fill="currentColor" text-anchor="middle">DEMO</text>
           </svg>
           </button>
+          <button id="controls-toggle" aria-label="Toggle Controls" class="primary-button" type="button">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <text x="12" y="14" font-size="20" fill="currentColor" text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle">?</text>
+            </svg>
+          </button>
         </aside>
 
         <div class="minimap">
             <div class="minimap-airship"></div>
         </div>
 
+        <div class="controls-modal">
+          <section aria-labelledby="controls-modal-title">
+            <h3>Controls</h3>
+            <div>
+                <svg class="controls-modal__icon" viewBox="0 0 94 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="35" y="1" width="24" height="24" rx="5" stroke="currentColor" stroke-width="2" />
+                  <rect x="1" y="35" width="24" height="24" rx="5" stroke="currentColor" stroke-width="2" />
+                  <rect x="35" y="35" width="24" height="24" rx="5" stroke="currentColor" stroke-width="2" />
+                  <rect x="69" y="35" width="24" height="24" rx="5" stroke="currentColor" stroke-width="2" />
+                  <path d="M47 5l-8 8h6v10h4V13h6l-8-8Z" fill="currentColor" />
+                  <path d="M47 55l8-8h-6V37h-4v10h-6l8 8Z" fill="currentColor" />
+                  <path d="M5 47l8-8v6h10v4H13v6l-8-8Z" fill="currentColor" />
+                  <path d="M89 47l-8-8v6H71v4h10v6l8-8Z" fill="currentColor" />
+                </svg>
+              <span>Steer/Adjust Altitude</span>
+            </div>
+            <div>
+                <svg class="controls-modal__icon" viewBox="0 0 186 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="1" width="184" height="32" rx="10" stroke="currentColor" stroke-width="2" />
+                  <text x="93" y="18" font-size="14" fill="currentColor" text-anchor="middle" dominant-baseline="middle" font-family="Inter, sans-serif">SPACE</text>
+                </svg>
+              <span>Move Forward</span>
+            </div>
+          </section>
+        </div>
       </main>
 
 

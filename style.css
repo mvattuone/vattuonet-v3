@@ -580,7 +580,7 @@ aside {
   right: 20px;
   display: flex;
   gap: 8px;
-  z-index: 30;
+  z-index: 5;
 }
 
 .primary-button {
@@ -606,6 +606,28 @@ aside {
 
 .primary-button.active {
   opacity: 1;
+}
+
+.controls-modal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+  max-width: 300px;
+}
+
+.controls-modal[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 #pause svg .play { display: none; }
@@ -672,7 +694,16 @@ aside {
     display: inline-flex;
     margin-bottom: 40px;
     margin-left: 40px;
+    margin-right: 40px;
     width: auto;
+  }
+
+  .controls-modal {
+    left: auto;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    transform: none;
   }
 }
 
