@@ -346,6 +346,31 @@ body {
   }
 }
 
+.paused-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  line-height: 1;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow:
+    2px 2px 0 #000,
+    -2px 2px 0 #000,
+    2px -2px 0 #000,
+    -2px -2px 0 #000;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+body:has(#pause.paused) .paused-text {
+  opacity: 1;
+}
+
 .sky {
   position: absolute;
   top: 0;
