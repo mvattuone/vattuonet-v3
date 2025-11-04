@@ -43,6 +43,7 @@
 
 .project-carousel {
   --carousel-slide-count: 2;
+  --carousel-nav-display: none;
   position: fixed;
   inset: 0;
   display: flex;
@@ -99,7 +100,7 @@
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  display: grid;
+  display: var(--carousel-nav-display, none);
   place-items: center;
   cursor: pointer;
   transition: opacity 0.3s ease;

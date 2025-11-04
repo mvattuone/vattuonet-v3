@@ -16,6 +16,7 @@ const appContainer = document.querySelector('#container');
 let activeIndex = 0;
 
 carousel.style.setProperty("--carousel-slide-count", String(slides.length));
+carousel.style.setProperty("--carousel-nav-display", slides.length > 1 ? "grid" : "none");
 
 const project = await loadProject(slides[activeIndex].remote);
 const element = createProjectContainer(slides[activeIndex].id, 'active');
