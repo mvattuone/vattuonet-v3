@@ -1,5 +1,3 @@
-
-*, *:before, *:after {
   box-sizing: border-box;
 }
 
@@ -23,273 +21,27 @@
   font-display: swap;
 }
 
-@property --universePerspective {
-  syntax: "<length>";
-  initial-value: 600px;
-  inherits: true;
-}
-@property --waterX {
-  syntax: "<length>";
-  initial-value: 0px;
-  inherits: true;
-}
-@property --waterY {
-  syntax: "<length>";
-  initial-value: 0px;
-  inherits: true;
-}
-@property --worldTiltOffset {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: true;
-}
-@property --universeRotateZ {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: true;
-}
-@property --skyWidthOverflow {
-  syntax: "<length>";
-  initial-value: 175px;
-  inherits: true;
-}
-@property --universeTranslateY { syntax: "<length>"; initial-value: 0px; inherits: true; }
-@property --universePerspectiveOriginYOffset { syntax: "<length>"; initial-value: 0px; inherits: true; }
-@property --fovY { syntax: "<angle>"; initial-value: 57deg; inherits: true; } /* optional */
-
-@property --skyTranslateX { syntax: "<length>"; initial-value: 0px; inherits: true; }
-@property --skyTranslateY { syntax: "<length>"; initial-value: -200px; inherits: true; }
-@property --skySlideYOffset { syntax: "<length>"; initial-value: 100px; inherits: true; }
-@property --skyPositionX { syntax: "<length>"; initial-value: 0px; inherits: true; }
-
-@property --airshipRotationShift { syntax: "<length>"; initial-value: 0px; inherits: true; }
-@property --airshipTranslateZ { syntax: "<length>"; initial-value: 350px; inherits: true; }
-@property --airshipAltitude { syntax: "<length>"; initial-value: 60px; inherits: true; }
-@property --airshipAltitudeRaw { syntax: "<number>"; initial-value: 0.6; inherits: true; }
-@property --shadowScale { syntax: "<number>"; initial-value: 1; inherits: true; }
-
-@property --worldOriginX { syntax: "<percentage>"; initial-value: 50%; inherits: true; }
-@property --worldOriginY { syntax: "<length>"; initial-value: calc(var(--refH) * 1px - 20px); inherits: true; }
-@property --worldTilt { syntax: "<angle>"; initial-value: 67deg; inherits: true; }
-
-@property --skyTileWidth { syntax: "<length>"; initial-value: 32px; inherits: true; }
-@property --waterTileSize { syntax: "<length>"; initial-value: 512px; inherits: true; }
-
-:root {
-  --bgX: 0;
-  --bgY: 0;
-
-  --refW: 1512;
-  --refH: 797;
-
-  --vw: 100vw;
-  --vh: 100vh;
-
-  --pixelZoom: 1;
-  --pixelScaleComp: 1;
-
-  --sx: calc(var(--vw) / var(--refW));
-  --sy: calc(var(--vh) / var(--refH));
-
-  --s-contain: min(var(--sx), var(--sy));
-  --s-cover: max(var(--sx), var(--sy));
-
-  --s: var(--s-cover);
-  --contentW: calc(var(--refW) * var(--s));
-  --contentH: calc(var(--refH) * var(--s));
-  --offsetX: calc((var(--vw) - var(--contentW)) / 2);
-  --offsetY: calc((var(--vh) - var(--contentH)) / 2);
-  --zRef: 1vmin;
-  --worldTiltBaseline: 67deg;
-  --worldTiltAtMaxAltitude: 67deg;
-  --worldTiltAtMinAltitude: 72deg;
-  --worldTiltOffset: 0deg;
-  --worldTiltFromAltitude: calc(
-    var(--worldTiltAtMinAltitude) +
-    (var(--worldTiltAtMaxAltitude) - var(--worldTiltAtMinAltitude)) * var(--airshipAltitudeRaw)
-  );
-  --worldTilt: calc(var(--worldTiltFromAltitude) + var(--worldTiltOffset));
-
-  --pitch:  var(--worldTiltOffset);
-  --horizon: calc(
-    (var(--refH) * 1px) / 2
-    - var(--universePerspective) * tan(var(--pitch))
-  );
-
-  --shadowScreenOffset: 20px;
-  --groundAnchorY: calc(var(--refH) * 1px - var(--shadowScreenOffset));
-
-  --universeHeight: 100vh;
-
-  --universeRotationShiftX: calc(
-    -0.5 * var(--universeHeight) * sin(var(--universeRotateZ))
-  );
-  --universeRotationShiftY: calc(
-    0.5 * var(--universeHeight) * (1 - cos(var(--universeRotateZ)))
-  );
-
-  --fovY: 57deg;
-  --universePerspective: calc((var(--refH) * 1px / 2) / tan(var(--fovY) / 2));
-  --universePerspectiveOriginX: 50%;
-  --universePerspectiveOriginY: 50%;
-  --universePerspectiveOriginYOffset: 0px;
-  --universePerspectiveOrigin: var(--universePerspectiveOriginX) calc(var(--universePerspectiveOriginY) + var(--universePerspectiveOriginYOffset));
-  --skyPositionX: 0px;
-  --skyTranslateY: -300px;
-  --skySlideYOffset: 200px;
-  --skyHeight: calc(var(--refH) * 1px - var(--horizon) + var(--skySlideYOffset));
-  --skyWidthOverflow: 175px;
-  --universeTranslateY: 0px;
-  --universeRotateZ: 0deg;
-  --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
-  --universeWidth: 100%;
-  --airshipTranslateX: -50%;
-  --airshipTranslateY: -50%;
-  --worldOriginX: 50%;
-  --worldOriginY: var(--groundAnchorY);
-  --worldRotateZ: 90deg;
-  --airshipTranslateZ: 350px;
-  --airshipAltitudeYGain: 0.8;
-
-  --minWorldOriginZ: 180px;
-  --maxWorldOriginZ: 480px;
-
-  --minWorldTranslateZ: 400px;
-  --maxWorldTranslateZ: 800px;
-  --minAltitude: 0px;
-  --maxAltitude: 100px;
-  --minAltitudeRaw: 0;
-  --maxAltitudeRaw: 1;
-  --airshipAltitude: 60px;
-  --airshipAltitudeRaw: 0.6;
-  --waterTileSize: 512px;
-  --waterX: 0px;
-  --waterY: 0px;
-  --skyTileWidth: 32px;
-
-  --glareColorSunsetA: rgba(255, 180, 80, 0.55) 0%;
-  --glareColorSunsetB: rgba(255, 180, 80, 0.32) 14%;
-  --glareColorSunsetC: rgba(255, 180, 80, 0.12) 34%;
-  --glareColorSunsetD: rgba(255, 180, 80, 0) 65%;
-
-  --glareColorDaylightA: rgba(160, 220, 255, 0.55) 0%;
-  --glareColorDaylightB: rgba(160, 220, 255, 0.32) 15%;
-  --glareColorDaylightC: rgba(210, 215, 255, 0.18) 32%;
-  --glareColorDaylightD: rgba(255, 200, 150, 0.08) 50%;
-  --glareColorDaylightE: rgba(255, 180, 80, 0) 72%;
-
-  --cloudImageWidth: 1536px;
-  --cloudImageHeight: 850px;
-
-  --shadowScale: 1;
-
-  --worldOriginXCorrected: calc(
-    var(--worldOriginX)
-  );
-  --worldOriginYCorrected: calc(
-    var(--worldOriginY) + (var(--universePerspectiveOriginYOffset) / 2) +
-      var(--universeTranslateY)
-  );
-  --worldTranslateZPerAltitude: calc(
-    (var(--maxWorldTranslateZ) - var(--minWorldTranslateZ)) /
-      (var(--maxAltitudeRaw) - var(--minAltitudeRaw))
-  );
-  --worldOriginZPerAltitude: calc(
-    (var(--maxWorldOriginZ) - var(--minWorldOriginZ)) /
-      (var(--maxAltitudeRaw) - var(--minAltitudeRaw))
-  );
-  --clampedWorldTranslateZ: clamp(
-    var(--minWorldTranslateZ),
-    calc(
-      var(--maxWorldTranslateZ) -
-        (var(--airshipAltitudeRaw) * var(--worldTranslateZPerAltitude))
-    ),
-    var(--maxWorldTranslateZ)
-  );
-  --clampedWorldOriginZ: clamp(
-    var(--minWorldOriginZ),
-    calc(
-      var(--maxWorldOriginZ) -
-        (var(--airshipAltitudeRaw) * var(--worldOriginZPerAltitude))
-    ),
-    var(--maxWorldOriginZ)
-  );
-
-
-  --widthGrossRotateScale: abs(calc(cos(var(--worldTiltBaseline)) + sin(var(--worldTiltBaseline))));
-
-  --airshipRotationShift: var(--universeRotationShiftX);
-
-  --pixelZoom: 1; 
-  --pixelScaleComp: 1;
-
-  &:has(.sky.rotate-left-enter) {
-    --universeRotateZ: -7deg;
-
-    transition:
-      --universeRotateZ 0.3s ease,
   }
 
-  &:has(.sky.rotate-right-enter) {
-    --universeRotateZ: 7deg;
-    --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
 
-    transition:
-      --universeRotateZ 0.3s ease,
-  }
 
-  &:has(.sky.rotate-left-enter.slide-down-enter) {
-    --skyTranslateX: calc(var(--skyWidthOverflow) / 2 * -1);
-  }
 
-  &:has(.sky.rotate-right-exit) 
-  &:has(.sky.rotate-left-exit)  {
-    transition:
-      --universeRotateZ 0.3s ease,
-  }
 }
 
-.universe .world {
-  --worldTiltOffset: 0deg;
 }
 
-.universe:has(.sky.slide-up-enter) .world {
-  --worldTiltOffset: -5deg;
 }
-.universe:has(.sky.slide-down-enter) .world {
-  --worldTiltOffset: 5deg;
 }
-.universe:has(.sky.slide-up-exit) .world,
-.universe:has(.sky.slide-down-exit) .world {
-  --worldTiltOffset: 0deg;
 }
 
-@keyframes waterDrift {
-  from {
-    --waterX: 0px;
-    --waterY: 0px;
-  }
-  to {
-    --waterX: calc(-1 * var(--waterTileSize));
-    --waterY: 0px;
-  }
 }
 
-@keyframes minimapBlink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.25;
-  }
 }
 
 html,
 body {
-  background-color: transparent;
   margin: 0;
   padding: 0;
-  overflow: clip;
   position: relative;
   width: var(--vw);
   height: var(--vh);
@@ -298,479 +50,44 @@ body {
   transform-origin: top left;
 }
 
-
-@supports (zoom: 1) {
-  body {
-    zoom: var(--pixelZoom);
-    transform: scale(var(--pixelScaleComp));
-  }
 }
 
-@supports not (zoom: 1) {
-  body {
-    width: calc(var(--vw) / var(--pixelScaleComp));
-    height: calc(var(--vh) / var(--pixelScaleComp));
-    transform: scale(var(--pixelScaleComp));
-  }
-}
-
-.universe {
-  background-color: transparent;
-
-  width: var(--vw);
-  height: calc(var(--refH) * 1px);
   position: absolute;
 
-  clip-path: inset(-250px);
-
-  perspective: var(--universePerspective);
-  perspective-origin: var(--universePerspectiveOrigin);
-
-  transform: translate3d(
-      var(--universeRotationShiftX),
-      calc(var(--universeTranslateY) + var(--universeRotationShiftY)),
-      0
-    )
-    rotateZ(var(--universeRotateZ));
-  will-change: transform;
-  transition:
-    transform 0.3s ease,
-    width 0.3s ease;
-
-
-  &:has(.sky.slide-down-enter) {
-    --universeTranslateY: 100px;
-  }
-  &:has(.sky.slide-up-enter) {
-    --universeTranslateY: -100px;
-  }
-
-  &:has(.sky.rotate-left-enter) .world,
-  &:has(.sky.rotate-right-enter) .world {
-    animation-play-state: paused;
-  }
 }
 
-.paused-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 6;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: 0.5rem;
-  line-height: 1;
-  color: #fff;
   text-transform: uppercase;
-  text-shadow:
-    2px 2px 0 #000,
-    -2px 2px 0 #000,
-    2px -2px 0 #000,
-    -2px -2px 0 #000;
-  transform: translate(-50%, -50%);
-  opacity: 0;
 }
 
-body:has(#pause.paused) .paused-text {
-  opacity: 1;
-}
-
-.sky {
-  position: absolute;
   top: 0;
-  left: 0;
-  width: calc(var(--vw) + var(--skyWidthOverflow));
-  height: var(--skyHeight);
-  background: url("clouds.png"), url("sky2.png");
-  background-repeat: repeat, repeat;
-  background-size:
-    calc(var(--cloudImageWidth) / 2) calc(var(--cloudImageHeight) / 2),
-    calc(var(--skyTileWidth) * 2) var(--skyHeight);
-  background-position:
-    calc(var(--skyPositionX)) 140px,
-    calc(var(--skyPositionX) * 0.75) 0;
-  z-index: 1;
-  transform: translate3d(var(--skyTranslateX), var(--skyTranslateY), 0);
-  will-change: transform, background-position;
-  backface-visibility: hidden;
-  transition:
-    transform 0.3s ease,
-    height 0.3s ease,
-    width 0.3s ease;
-}
-
-.haze {
-  position: absolute;
-  inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(
-      to top,
-      color-mix(in oklab, #000 0%, transparent 100%) 0%,
-      color-mix(in oklab, #000 0%, transparent 100%) var(--horizon, 62%),
-      color-mix(in oklab, #3f729d 45%, transparent 55%) 100%
-    );
-  mix-blend-mode: soft-light;
-  opacity: 0.8;
-  z-index: 2;
 }
 
-.glare {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: calc(var(--vw) + var(--skyWidthOverflow));
-  height: 200px;
-  pointer-events: none;
-  z-index: 3;
-  transform: translate3d(0, var(--skyHeight), 0);
-  will-change: transform;
-
-  transition:
-    transform 0.3s ease,
-    height 0.3s ease,
-    width 0.3s ease;
-
-  background: linear-gradient(
-    to bottom,
-    var(--glareColorDaylightA),
-    var(--glareColorDaylightB),
-    var(--glareColorDaylightC),
-    var(--glareColorDaylightD),
-    var(--glareColorDaylightE)
-  );
-  mix-blend-mode: screen;
-}
-
-.world {
-  --worldHeight: 4900px;
-  --worldTranslateY: calc(-1 * var(--worldHeight) / 2);
-  --worldWidthOverscan: 1600px;
-  
-  animation: waterDrift 15s linear infinite;
-  width: calc(var(--vw) + var(--worldWidthOverscan));
-  height: var(--worldHeight);
-  transform: translateX(calc(-1 * (var(--worldWidthOverscan)) / 2)) rotateX(var(--worldTilt)) rotateZ(var(--worldRotateZ)) translateY(var(--worldTranslateY)) translateZ(var(--clampedWorldTranslateZ));
-  transform-origin: var( --worldOriginXCorrected) var(--worldOriginYCorrected) var(--clampedWorldOriginZ);
-  background-color: #0a2740;
-  background-image: url("./world.png"), url("./water.png");
-  background-repeat: repeat, repeat;
-  background-size:
-    4096px 4096px,
-    var(--waterTileSize) var(--waterTileSize);
-  background-position:
-    calc(var(--worldOriginXCorrected) + var(--bgX)) calc(var(--worldOriginYCorrected) + var(--bgY)),
-    calc(var(--worldOriginXCorrected) + var(--bgX) + var(--waterX, 0px))
-      calc(var(--worldOriginYCorrected) + var(--bgY) + var(--waterY, 0px));
-  image-rendering: pixelated;
-  position: relative;
-  will-change: transform, background-position, transform-origin;
-  backface-visibility: hidden;
-  transition: --worldTiltOffset 0.3s ease;
-}
-
-.airship {
-  image-rendering: pixelated;
-  background-image: url("./airship.png");
-  background-repeat: no-repeat;
-  width: 72px;
-  height: 72px;
-  position: absolute;
-  bottom: calc(
-    var(--shadowScreenOffset) +
-    var(--airshipTranslateZ) * sin(var(--worldTilt)) +
-    (var(--airshipAltitude) * var(--airshipAltitudeYGain))
-  );
-  left: 50%;
-  transform-origin: 50% 100%;
-  transform: translateX(-50%) translateZ(var(--airshipTranslateZ));
-  z-index: 999;
-}
-
-.shadow {
-  --shadowWidth: 100px;
-  --shadowHeight: 200px;
-
-  width: var(--shadowWidth);
-  height: var(--shadowHeight);
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 50%;
-  position: absolute;
-  left: 50%;
-  bottom: 20px;
-  transform: rotateZ(calc(-1 * var(--universeRotateZ))) rotateX(125deg)
-    translateX(
-      calc(
-        var(--clampedWorldTranslateZ) * sin(var(--universeRotateZ)) -
-          (var(--shadowWidth) / 2)
-      )
-    )
-    translateZ(1px) scale(var(--shadowScale));
-  transition: transform 0.3s ease;
-}
-
-/* This is just for debugging purposes */
-.origin-marker {
-  --markerSize: 5px;
-
-  display: none;
-  position: absolute;
-  width: var(--markerSize);
-  height: var(--markerSize);
-  background: red;
-  border-radius: 50%;
-  /* Place marker at corrected world pivot (after countering universe shift) */
-  left: calc(var(--worldOriginXCorrected) - var(--markerSize) / 2);
-  top: calc(var(--worldOriginYCorrected) - var(--markerSize) / 2);
-  transform: translateZ(1px);
-}
-
-.debug-mode .origin-marker {
-  display: block;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  height: var(--vh);
-  width: var(--vw);
-  position: absolute;
-}
-
-section {
-  background: black;
-  display: flex;
-  flex-direction: column;
-  padding: 30px;
-  text-align: center;
-  gap: 24px;
-  width: var(--vw);
-}
-
-nav ul {
-  list-style: none;
   margin: 0;
-  padding: 0;
   display: flex;
   justify-content: space-between;
 }
 
-h3,
-p,
-a {
-  color: white;
   margin: 0;
-  font-family: "Inter", sans-serif;
-}
-
-a {
   text-transform: uppercase;
 }
 
-h3 {
-  text-transform: uppercase;
 }
 
-aside {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
-  gap: 8px;
-  z-index: 5;
 }
 
-@media (hover: none) {
-  #controls-toggle {
-    display: none;
-  }
-}
-
-.primary-button {
-  appearance: none;
-  display: grid;
-  width: 44px;
-  height: 44px;
-  border: 0;
   border-radius: 999px;
-  background: #111;
   color: #fff;
-  font-size: 18px; 
-  line-height: 1;
-  margin: 0;
-  opacity: 0.5;
-  cursor: pointer;
-  place-items: center;
-  transition: opacity 0.3s ease;
-}
-.primary-button:active {
-  transform: translateY(1px);
 }
 
-.primary-button.active {
-  opacity: 1;
 }
 
-.controls-modal {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  display: flex;
-  align-items: flex-end;
-  color: #fff;
-  max-width: 300px;
-}
-
-.controls-modal[data-visible="true"] {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-#pause svg .play { display: none; }
-#pause svg .pause { display: inline; }
-
-#pause.paused svg .play { display: inline; }
-#pause.paused svg .pause { display: none; }
-
-
-.minimap {
-  --minimapSize: 300px;
-  position: absolute;
-  width: var(--minimapSize);
-  height: var(--minimapSize);
-  pointer-events: none;
-  left: 50%;
-  top: 50%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  z-index: 4;
-  background-color: rgba(30, 52, 68, 0.55);
-  background-image: url("./world.png");
-  background-size: 100% 100%;
-  image-rendering: pixelated;
-  filter: saturate(0) contrast(1.18) brightness(0.8) blur(0.35px);
-  transform: translate(-50%, -50%);
-}
-
-.minimap[data-visible="true"] {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.minimap-airship {
-  position: absolute;
-  top: calc(var(--minimapAirshipY, 0.5) * 100%);
-  left: calc(var(--minimapAirshipX, 0.5) * 100%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-  transform: translate(-50%, -50%);
-  animation: minimapBlink 0.8s steps(1, end) infinite;
-}
-
-@media all and (min-width: 600px) {
-  .primary-button {
-    bottom: 20px;
-    top: unset;
   }
 
-  .minimap {
-    --minimapSize: 240px;
-    left: auto;
-    top: auto;
-    right: 40px;
-    bottom: 40px;
-    transform: none;
   }
 
-  section {
-    display: inline-flex;
-    margin-bottom: 40px;
-    margin-left: 40px;
-    margin-right: 40px;
-    width: auto;
   }
 
-  .controls-modal {
-    left: auto;
-    right: 0;
-    bottom: 0;
-    top: auto;
-    transform: none;
-  }
-}
-
-@media all and (min-height: 900px) {
-  .universe {
-    clip-path: inset(-800px);
-  }
-
-  .world {
-    --worldHeight: 6400px;
-  }
-}
-
-@media all and (min-width: 1600px) {
-  .world {
-    --worldWidthOverscan: calc(var(--refW) * 2px);
-  }
-}
-
-@media (resolution: 1.5dppx), (-webkit-min-device-pixel-ratio: 1.5) {
-  :root{
-    --pixelZoom: 0.666667;
-    --pixelScaleComp: 1.5;
-  }
-}
-
-@media (resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
-  :root{
-    --pixelZoom: 0.5;
-    --pixelScaleComp: 2;
-  }
-}
-
-@media (resolution: 3dppx), (-webkit-min-device-pixel-ratio: 3) {
-  :root{
-    --pixelZoom: 0.333333;
-    --pixelScaleComp: 3;
-  }
-}
-
-@media (resolution: 4dppx), (-webkit-min-device-pixel-ratio: 4) {
-  :root{
-    --pixelZoom: 0.25;
-    --pixelScaleComp: 4;
-  }
-}
-
-@supports (width: 100dvw) {
-  :root {
-    --vw: 100dvw; 
-  }
-}
-
-@supports (height: 100dvh) {
-  :root { --vh: 100dvh; }
-}
-
-
-@supports (font: -apple-system-body) {
-  :root{
-    --pixelZoom: 1;
-    --pixelScaleComp: 1;
   }
 }
