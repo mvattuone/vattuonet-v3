@@ -211,30 +211,25 @@ body {
 
 .site-nav a {
   pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
   color: rgba(255, 255, 255, 0.88);
-  background: rgba(255, 255, 255, 0.08);
   text-decoration: none;
-  text-transform: uppercase;
-  font-size: clamp(0.6rem, 2vw, 0.72rem);
-  letter-spacing: 0.12em;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  text-transform: none;
+  font-size: clamp(0.65rem, 2vw, 0.85rem);
+  letter-spacing: 0;
+  transition: color 0.2s ease;
 }
 
 .site-nav a:hover,
 .site-nav a:focus-visible {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
   color: #fff;
 }
 
 .site-nav a:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline: 2px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
 }
 
@@ -255,6 +250,6 @@ body {
   }
 
   .site-nav a {
-    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 }
