@@ -5,7 +5,7 @@ import {
   loadProject,
   setProjectCarouselSlideState,
 } from './projects/index.js';
-import { flushStyles, getComputedTranslateX } from './utils/index.js';
+import { forceReflow, getComputedTranslateX } from './utils/index.js';
 
 const carousel = document.querySelector(".project-carousel");
 const nextButton = carousel.querySelector(".carousel-button.next");
@@ -71,7 +71,7 @@ async function goToSlide(targetIndex, direction) {
     nextElement = createProjectContainer(nextProject.id, incomingPlacement);
     nextElement.style.setProperty("--slide-transition-offset-x", offsetValue);
     nextElement.classList.add("with-slide-offset");
-    flushStyles(nextElement);
+    forceReflow(nextElement);
     slides[targetIndex].handle = project;
 
     await project.mount({container: nextElement, root: nextProject.root});
