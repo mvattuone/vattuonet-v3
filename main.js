@@ -1,6 +1,6 @@
 import { SLIDE_TRANSITION_DURATION, PROJECTS as slides } from './constants.js';
 import {
-  createProjectContainer,
+  createProjectCarouselSlideContainer,
   detachProject,
   loadProject,
   setProjectCarouselSlideState,
@@ -19,7 +19,7 @@ carousel.style.setProperty("--carousel-slide-count", String(slides.length));
 carousel.style.setProperty("--carousel-nav-display", slides.length > 1 ? "grid" : "none");
 
 const project = await loadProject(slides[activeIndex].remote);
-const element = createProjectContainer(slides[activeIndex].id, 'active');
+const element = createProjectCarouselSlideContainer(slides[activeIndex].id, 'active');
 setProjectCarouselSlideState(element, 'active');
 await project.mount({container: element, root: slides[activeIndex].root});
 slides[activeIndex].handle = project;
@@ -68,7 +68,7 @@ async function goToSlide(targetIndex, direction) {
       node.classList.remove("with-slide-offset");
     });
 
-    nextElement = createProjectContainer(nextProject.id, incomingPlacement);
+    nextElement = createProjectCarouselSlideContainer(nextProject.id, incomingPlacement);
     nextElement.style.setProperty("--slide-transition-offset-x", offsetValue);
     nextElement.classList.add("with-slide-offset");
     forceReflow(nextElement);

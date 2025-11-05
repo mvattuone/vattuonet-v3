@@ -8,7 +8,7 @@ const getNextInstanceId = (id) => {
   return `${id}-${nextCount}`;
 };
 
-export function createProjectContainer(id, placement) {
+export function createProjectCarouselSlideContainer(id, placement) {
   const container = document.querySelector("#container");
   const element = document.createElement("div");
   element.classList.add("project");

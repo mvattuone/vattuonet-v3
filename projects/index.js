@@ -1,4 +1,4 @@
-export { createProjectContainer } from "./createProjectContainer.js";
+export { createProjectCarouselSlideContainer } from "./createProjectCarouselSlideContainer.js";
 export { setProjectCarouselSlideState } from "./setProjectCarouselSlideState.js"
 export { detachProject } from "./detachProject.js";
 export { loadProject } from "./loadProject.js";
