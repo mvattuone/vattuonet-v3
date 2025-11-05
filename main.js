@@ -15,14 +15,46 @@ const appContainer = document.querySelector('#container');
 
 let activeIndex = 0;
 
+function getPathSegment() {
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  return segments[0] ?? '';
+}
+
+function getInitialProjectIndex() {
+  const pathSegment = getPathSegment();
+  if (!pathSegment) {
+    return 0;
+  }
+  const targetIndex = slides.findIndex(({ id }) => id === pathSegment);
+  if (targetIndex <= 0) {
+    window.history.replaceState(null, '', '/');
+    return 0;
+  }
+  return targetIndex;
+}
+
+function updateHistoryForActiveProject() {
+  const project = slides[activeIndex];
+  if (!project) {
+    return;
+  }
+  const targetPath = activeIndex === 0 ? '/' : `/${project.id}`;
+  if (window.location.pathname !== targetPath) {
+    window.history.replaceState(null, '', targetPath);
+  }
+}
+
 carousel.style.setProperty("--carousel-slide-count", String(slides.length));
 carousel.style.setProperty("--carousel-nav-display", slides.length > 1 ? "grid" : "none");
+
+activeIndex = getInitialProjectIndex();
 
 const project = await loadProject(slides[activeIndex].remote);
 const element = createProjectCarouselSlideContainer(slides[activeIndex].id, 'active');
 setProjectCarouselSlideState(element, 'active');
 await project.mount({container: element, root: slides[activeIndex].root});
 slides[activeIndex].handle = project;
+updateHistoryForActiveProject();
 
 function getAdjacentIndex(delta) {
   if (slides.length === 0) {
@@ -80,6 +112,7 @@ async function goToSlide(targetIndex, direction) {
     }
     setProjectCarouselSlideState(nextElement, "active");
     activeIndex = targetIndex;
+    updateHistoryForActiveProject();
 
     const outgoingElement = currentElement;
     const incomingElement = nextElement;
