@@ -6,6 +6,7 @@ import {
   setProjectCarouselSlideState,
 } from './projects/index.js';
 import { forceReflow, getComputedTranslateX } from './utils/index.js';
+import { getHostContext } from './hostContext.js';
 
 const carousel = document.querySelector(".project-carousel");
 const nextButton = carousel.querySelector(".carousel-button.next");
@@ -52,7 +53,8 @@ activeIndex = getInitialProjectIndex();
 const project = await loadProject(slides[activeIndex].remote);
 const element = createProjectCarouselSlideContainer(slides[activeIndex].id, 'active');
 setProjectCarouselSlideState(element, 'active');
-await project.mount({container: element, root: slides[activeIndex].root});
+const initialHostContext = getHostContext(slides[activeIndex].id);
+await project.mount({container: element, root: slides[activeIndex].root, host: initialHostContext});
 slides[activeIndex].handle = project;
 updateHistoryForActiveProject();
 
@@ -77,6 +79,8 @@ function goToPrev() {
 async function goToSlide(targetIndex, direction) {
   const currentProject = slides[activeIndex];
   const nextProject = slides[targetIndex];
+  const currentHostContext = currentProject ? getHostContext(currentProject.id) : null;
+  const nextHostContext = nextProject ? getHostContext(nextProject.id) : null;
 
   if (!nextProject) {
     return;
@@ -106,7 +110,7 @@ async function goToSlide(targetIndex, direction) {
     forceReflow(nextElement);
     slides[targetIndex].handle = project;
 
-    await project.mount({container: nextElement, root: nextProject.root});
+    await project.mount({container: nextElement, root: nextProject.root, host: nextHostContext});
     if (currentElement) {
       setProjectCarouselSlideState(currentElement, outgoingState);
     }
@@ -119,7 +123,7 @@ async function goToSlide(targetIndex, direction) {
 
     setTimeout(async () => {
       if (outgoingElement) {
-        await detachProject(currentProject, outgoingElement);
+        await detachProject(currentProject, outgoingElement, currentHostContext);
       }
       if (incomingElement) {
         incomingElement.style.removeProperty("--slide-transition-offset-x");
@@ -132,7 +136,7 @@ async function goToSlide(targetIndex, direction) {
       setProjectCarouselSlideState(currentElement, "active");
     }
     if (nextElement) {
-      await detachProject(nextProject, nextElement);
+      await detachProject(nextProject, nextElement, nextHostContext);
       nextElement.style.removeProperty("--slide-transition-offset-x");
       nextElement.classList.remove("with-slide-offset");
     }

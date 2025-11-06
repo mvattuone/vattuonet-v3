@@ -1,4 +1,4 @@
-export async function detachProject(project, container) {
+export async function detachProject(project, container, hostContext = null) {
   if (!project?.handle || typeof project.handle.unmount !== "function") {
     container?.remove();
     return;
@@ -13,6 +13,6 @@ export async function detachProject(project, container) {
     scopedRoot = container.querySelector(rootSelectorOrNode);
   }
 
-  await project.handle.unmount(scopedRoot ?? rootSelectorOrNode);
+  await project.handle.unmount(scopedRoot ?? rootSelectorOrNode, hostContext);
   container?.remove();
 }
