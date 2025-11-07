@@ -27,7 +27,7 @@ function getInitialProjectIndex() {
     return 0;
   }
   const targetIndex = slides.findIndex(({ id }) => id === pathSegment);
-  if (targetIndex <= 0) {
+  if (targetIndex === -1) {
     window.history.replaceState(null, '', '/');
     return 0;
   }
@@ -39,8 +39,16 @@ function updateHistoryForActiveProject() {
   if (!project) {
     return;
   }
-  const targetPath = activeIndex === 0 ? '/' : `/${project.id}`;
-  if (window.location.pathname !== targetPath) {
+  const currentPath = window.location.pathname;
+  if (activeIndex === 0) {
+    if (currentPath === '/' || currentPath === '/airship') {
+      return;
+    }
+    window.history.replaceState(null, '', '/');
+    return;
+  }
+  const targetPath = `/${project.id}`;
+  if (currentPath !== targetPath) {
     window.history.replaceState(null, '', targetPath);
   }
 }
